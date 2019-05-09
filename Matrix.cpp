@@ -213,5 +213,3 @@ template<typename T> Matrix<T>::~Matrix() {
     for(int i = 0; i < this->rows; i++)
         delete[] this->data[i];
 }
-
-template class Matrix<double>;
