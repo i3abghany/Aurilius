@@ -34,7 +34,7 @@ template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_l
     this->rows = ROWS;
     this->cols = COLS;
     for(auto row : data_to_copy) {
-        if(row.size() != COLS) //TODO: add exception.
+        if(row.size() != COLS)
             throw std::runtime_error{"Rows can't have different numbers of elements."};
     }
     this->data = new T*[ROWS];
@@ -59,9 +59,7 @@ template<typename T> void Matrix<T>::exchange_cols(int c1, int c2) {
 
 // eexchanges rows r1 and r2.
 template <typename T> void Matrix<T>::exchange_rows(int r1, int r2) {
-    for(int j = 0; j < this->cols; j++) {
-        std::swap(this->data[r1][j], this->data[r2][j]);
-    }
+    std::swap(this->data[r1], this->data[r2]);
 }
 
 // Matrix multiplication.

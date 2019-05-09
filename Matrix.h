@@ -1,22 +1,16 @@
-#ifndef UNTITLED_MATRIX_H
-#define UNTITLED_MATRIX_H
+#ifndef MATRIX_MATRIX_H
+#define MATRIX_MATRIX_H
 
 #include <iostream>
 #include <vector>
 #include <iomanip>
 #include <math.h>
-
-const double EPS = 1e-7;
-//template<typename T> class Matrix;
-//template <typename T> std::ostream & operator << (std::ostream &out, const Matrix<T> &);
-
-
+#include <limits>
+const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
     T **data;
     int cols, rows;
-
-
 public:
     Matrix();
     Matrix(int, int); // initialized diminsions.
@@ -37,8 +31,8 @@ public:
             out << "{";
             for(int j = 0; j < mat.get_cols(); j++) {
                 if(fabs(mat[i][j] - 0) < EPS)
-                    out << std::fixed << std::setprecision(4) << std::setw(5) << (mat[i][j] = 0);
-                else out << std::fixed << std::setprecision(4) << std::setw(5) << mat[i][j];
+                    out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
+                else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
                 if(j != mat.get_cols() - 1)
                     out << ' ';
             }
@@ -49,7 +43,6 @@ public:
         return out;
     }
 
-    // returns the identity matrix of size N
     static Matrix<T> eye(int N);
 
 
@@ -62,10 +55,8 @@ public:
     bool is_inconsistent();
 
     void upper();
+
     ~Matrix();
 };
 
-
-
-
-#endif //UNTITLED_MATRIX_H
+#endif // MATRIX_MATRIX_H
