@@ -97,6 +97,17 @@ template <typename T> Matrix<T> Matrix<T>::eye(int N) {
     return result;
 }
 
+template <typename T> Matrix<T> Matrix<T>::operator *= (const Matrix<T>& a) {
+	*this = *this + a;
+	return *this;
+}
+
+template <typename T> Matrix<T> Matrix<T>::operator += (const Matrix<T>& a) {
+	*this = *this + a;
+	return *this;
+}
+
+// Returns the number of zero rows in the matrix.
 template <typename T> int Matrix<T>::zero_rows() {
     int rank = this->get_rows();
     for(int i = 0; i < this->get_rows(); i++) {
@@ -211,3 +222,5 @@ template<typename T> Matrix<T>::~Matrix() {
     for(int i = 0; i < this->rows; i++)
         delete[] this->data[i];
 }
+
+template class Matrix<int>;

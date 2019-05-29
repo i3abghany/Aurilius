@@ -25,7 +25,7 @@ public:
 
     static Matrix<T> matmul(const Matrix<T>&, const Matrix<T>&);
     static Matrix<T> transpose(const Matrix<T>&);
-
+	static Matrix<T> pow(const Matrix<T>&, const size_t &);
     friend std::ostream& operator<<(std::ostream &out, const Matrix<T> & mat) {
         for(int i = 0; i < mat.get_rows(); i++) {
             out << "{";
@@ -43,8 +43,37 @@ public:
         return out;
     }
 
-    static Matrix<T> eye(int N);
+    friend Matrix<T> operator*(const Matrix<T>& a, const Matrix<T>& b) {
+    	Matrix<T> res = matmul(a, b);
+	return res;
+    }
 
+    friend Matrix<T> operator + (const Matrix<T>& a, const Matrix<T>& b) {
+    	if(a.get_rows() != b. get_rows() || a.get_cols() != b.get_cols())
+			throw std::runtime_error{"Matrices of different dimensions cannot be added"};
+		Matrix<T> res {a.get_rows(), a.get_cols()};
+		for(int i = 0; i < res.get_rows(); i++) {
+			for(int j = 0; j < res.get_cols(); j++)
+				res[i][j] = (a[i][j] + b[i][j]);
+		}
+		return res;
+    }
+
+	Matrix<T> operator *= (const Matrix<T>&);
+	Matrix<T> operator += (const Matrix<T>&);
+	
+	friend Matrix<T> operator -  (const Matrix<T>& a) {
+	    auto tmp = Matrix<T> {a.data, a.get_rows(), a.get_cols()};
+	    for(int i = 0; i < a.get_rows(); i++) {
+	        for(int j = 0; j < a.get_cols(); j++) {
+		    tmp[i][j] = -1 * tmp[i][j];
+  	        }
+	    }
+	    return tmp;
+	}
+
+
+    static Matrix<T> eye(int N);
 
     T* operator[](int i) const {
         return data[i];
