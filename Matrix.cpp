@@ -28,6 +28,43 @@ template <typename T> Matrix<T>::Matrix(T ** data_to_copy, int ROWS, int COLS) {
     }
 }
 
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T> &mat) {
+    this->rows = mat.rows;
+    this->cols = mat.cols;
+    this->data = new T*[this->rows]{};
+    for(int i = 0; i < this->rows; i++) {
+        this->data[i] = new T[this->cols]{};
+    }
+    for(int i = 0; i < this->rows; i++) {
+        for(int j = 0; j < this->cols; j++) {
+            this->data[i][j] = mat.data[i][j];
+        }
+    }
+    return *this;
+}
+
+template<typename T>
+Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
+    int ROWS = data_to_copy.size();
+    int COLS = data_to_copy.begin()->size();
+    this->rows = ROWS;
+    this->cols = COLS;
+    for(auto &row : data_to_copy) {
+        if (row.size() != COLS) {
+            throw std::runtime_error{"Rows can't have different numbers of elements."};
+        }
+    }
+    this->data = new T*[ROWS];
+    for(int i = 0; i < ROWS; i++)
+        this->data[i] = new T[COLS];
+    for(int i = 0; i < this->rows; i++) {
+        for(int j = 0; j < this->cols; j++) {
+            this->data[i][j] = data_to_copy[i][j];
+        }
+    }
+}
+
 template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
     int ROWS = data_to_copy.size();
     int COLS = data_to_copy.begin()->size();
