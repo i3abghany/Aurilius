@@ -104,10 +104,13 @@ public:
         raw_form.erase(raw_form.end() - 1);
 
         size_t num_rows = std::count_if(raw_form.begin(), raw_form.end(),
-                                 [](int c) {
-                                     return c == ';';
-                                 });
-        std::replace_if(raw_form.begin(), raw_form.end(), [](int c) { return c == ';';}, '\n');
+										[](int c) {
+											return c == ';';
+										});
+        std::replace_if(raw_form.begin(), raw_form.end(), 
+										[](int c) {
+											return c == ';';
+										}, '\n');
         std::stringstream ss(raw_form);
         std::vector<std::vector<T>> tmp_data(num_rows, std::vector<T>());
         int i = 0;
