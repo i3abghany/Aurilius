@@ -17,6 +17,8 @@ public:
     Matrix(int, int); // initialized diminsions.
     Matrix(T**, int, int);
     Matrix(std::initializer_list<std::initializer_list<T>>);
+    Matrix(std::vector<std::vector<T>>);
+    Matrix<T>& operator=(const Matrix<T>&);
 
     int get_cols() const {return this->cols;}
     int get_rows() const {return this->rows;}
