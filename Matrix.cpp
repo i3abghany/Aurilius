@@ -2,25 +2,26 @@
 #include <algorithm>
 #include "Matrix.h"
 
-template <typename T> Matrix<T>::Matrix() {
-    this->cols = this->rows = 0;
-    this->data = nullptr;
-}
+template <typename T> Matrix<T>::Matrix()
+                    : cols(0), rows(0),
+                    data(std::vector<std::vector<T>>()) {}
 
-template <typename T> Matrix<T>::Matrix(int ROWS, int COLS) {
+template <typename T> Matrix<T>::Matrix(int ROWS, int COLS, T initial) {
     this->rows = ROWS;
     this->cols = COLS;
-    this->data = new T*[ROWS];
-    for(int i = 0; i < ROWS; i++)
-        data[i] = new T[COLS]{};
+    this->data.resize(this->rows);
+    for(size_t i = 0; i < this->data.size(); i++) {
+        this->data[i].resize(this->cols, initial);
+    }
 }
 
 template <typename T> Matrix<T>::Matrix(T ** data_to_copy, int ROWS, int COLS) {
     this->cols = COLS;
     this->rows = ROWS;
-    this->data = new T*[ROWS];
-    for(int i = 0; i < ROWS; i++)
-        data[i] = new T[COLS];
+    this->data.resize(this->rows);
+    for(size_t i = 0; i < this->data.size(); i++) {
+        this->data[i].resize(this->cols);
+    }
     for(int i = 0; i < ROWS; i++) {
         for(int j = 0; j < COLS; j++) {
             this->data[i][j] = data_to_copy[i][j];
@@ -28,21 +29,30 @@ template <typename T> Matrix<T>::Matrix(T ** data_to_copy, int ROWS, int COLS) {
     }
 }
 
-template<typename T>
-Matrix<T>& Matrix<T>::operator=(const Matrix<T> &mat) {
-    this->rows = mat.rows;
-    this->cols = mat.cols;
-    this->data = new T*[this->rows]{};
-    for(int i = 0; i < this->rows; i++) {
-        this->data[i] = new T[this->cols]{};
-    }
-    for(int i = 0; i < this->rows; i++) {
-        for(int j = 0; j < this->cols; j++) {
-            this->data[i][j] = mat.data[i][j];
+template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
+    int ROWS = data_to_copy.size();
+    int COLS = data_to_copy.begin()->size();
+    this->rows = ROWS;
+    this->cols = COLS;
+    for(auto row : data_to_copy) {
+        if (row.size() != COLS) {
+            throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
     }
-    return *this;
+    this->data.resize(this->rows);
+    for(size_t i = 0; i < this->data.size(); i++) {
+        this->data[i].resize(this->cols);
+    }
+    int i = 0, j = 0;
+    for(auto row : data_to_copy) {
+        for(auto el : row) {
+            this->data[i][j++] = el;
+        }
+        i++;
+        j = 0;
+    }
 }
+
 
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
@@ -55,38 +65,10 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
     }
-    this->data = new T*[ROWS];
-    for(int i = 0; i < ROWS; i++)
-        this->data[i] = new T[COLS];
-    for(int i = 0; i < this->rows; i++) {
-        for(int j = 0; j < this->cols; j++) {
-            this->data[i][j] = data_to_copy[i][j];
-        }
-    }
+    // move.
+    this->data = static_cast<std::vector<std::vector<T>>&&>(data_to_copy);
 }
 
-template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
-    int ROWS = data_to_copy.size();
-    int COLS = data_to_copy.begin()->size();
-    this->rows = ROWS;
-    this->cols = COLS;
-    for(auto row : data_to_copy) {
-        if(row.size() != COLS)
-            throw std::runtime_error{"Rows can't have different numbers of elements."};
-    }
-    this->data = new T*[ROWS];
-    for(int i = 0; i < ROWS; i++)
-        this->data[i] = new T[COLS];
-
-    int i = 0, j = 0;
-    for(auto row : data_to_copy) {
-        for(auto el : row) {
-            this->data[i][j++] = el;
-        }
-        i++;
-        j = 0;
-    }
-}
 
 template<typename T> void Matrix<T>::exchange_cols(int c1, int c2) {
     for(int i = 0; i < this->rows; i++) {
@@ -100,7 +82,7 @@ template <typename T> void Matrix<T>::exchange_rows(int r1, int r2) {
 }
 
 // Matrix multiplication.
-template <typename T> Matrix<T> Matrix<T>::matmul(const Matrix<T> & first,const Matrix<T> & second) {
+template <typename T> Matrix<T> Matrix<T>::matmul(const Matrix<T> & first, const Matrix<T> & second) {
 
     if(first.get_cols() != second.get_rows())
         throw std::runtime_error{"Size doesn't match for matrix multiplication."};
@@ -134,17 +116,6 @@ template <typename T> Matrix<T> Matrix<T>::eye(int N) {
     return result;
 }
 
-template <typename T> Matrix<T> Matrix<T>::operator *= (const Matrix<T>& a) {
-	*this = *this + a;
-	return *this;
-}
-
-template <typename T> Matrix<T> Matrix<T>::operator += (const Matrix<T>& a) {
-	*this = *this + a;
-	return *this;
-}
-
-// Returns the number of zero rows in the matrix.
 template <typename T> int Matrix<T>::zero_rows() {
     int rank = this->get_rows();
     for(int i = 0; i < this->get_rows(); i++) {
@@ -230,13 +201,21 @@ template <typename T> void Matrix<T>::gaussian_elemination() {
 
 }
 
-template <typename T> void Matrix<T>::upper() {
+template <typename T> Matrix<T> Matrix<T>::upper() {
+    Matrix<T> L{ eye(this->rows) };
+    Matrix<T> tmp_L {eye(this->rows)};
     for (int row = 0; row < this->get_rows(); row++) {
         T pivot = (*this)[row][row];
         if (pivot != 0) {
             for (int successor_row = row + 1; successor_row < this->get_rows(); successor_row++) {
                 T multiplier = (*this)[successor_row][row] / pivot;
+
                 for (int elem = 0; elem < this->get_cols(); elem++) {
+                    if(elem < successor_row) {
+                        if((*this)[successor_row][elem] != 0) {
+                            tmp_L[successor_row][elem] = multiplier;
+                        }
+                    }
                     (*this)[successor_row][elem] -= multiplier * (*this)[row][elem];
                 }
             }
@@ -253,11 +232,61 @@ template <typename T> void Matrix<T>::upper() {
                 row--;
         }
     }
+    return tmp_L;
 }
 
+template<typename T>
+Matrix<T> Matrix<T>::operator+=(const Matrix<T> &m) {
+    *this = (*this) + m;
+    return (*this);
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::operator*=(const Matrix<T> &m) {
+    *this = (*this) * m;
+    return *this;
+}
+
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T> &mat) {
+    this->rows = mat.rows;
+    this->cols = mat.cols;
+    this->data = mat.data;
+    return *this;
+}
+
+template<typename T>
+std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
+    Matrix<T> mat = m;
+    Matrix<T> L = mat.upper(), U = mat;
+    return {L, U};
+
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::upper(Matrix<T> m) {
+    m.upper();
+    return m;
+}
+
+template<typename T>
+bool Matrix<T>::is_symmetric(const Matrix &m) {
+    if(m.rows != m.cols) {
+        return false;
+    }
+    for(int i = 0; i < m.rows; ++i) {
+        for(int j = 0; j < i; ++j) {
+            if(m[i][j] != m[j][i]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 template<typename T> Matrix<T>::~Matrix() {
-    for(int i = 0; i < this->rows; i++)
-        delete[] this->data[i];
+    this->data.clear();
 }
 
 template class Matrix<short>;
