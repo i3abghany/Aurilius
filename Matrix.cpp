@@ -6,7 +6,7 @@ template <typename T> Matrix<T>::Matrix()
                     : cols(0), rows(0),
                     data(std::vector<std::vector<T>>()) {}
 
-template <typename T> Matrix<T>::Matrix(int ROWS, int COLS, T initial) {
+template <typename T> Matrix<T>::Matrix(size_t ROWS, size_t COLS, T initial) {
     this->rows = ROWS;
     this->cols = COLS;
     this->data.resize(this->rows);
@@ -15,7 +15,7 @@ template <typename T> Matrix<T>::Matrix(int ROWS, int COLS, T initial) {
     }
 }
 
-template <typename T> Matrix<T>::Matrix(T ** data_to_copy, int ROWS, int COLS) {
+template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t COLS) {
     this->cols = COLS;
     this->rows = ROWS;
     this->data.resize(this->rows);
@@ -71,7 +71,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
 
 
 template<typename T> void Matrix<T>::exchange_cols(int c1, int c2) {
-    for(int i = 0; i < this->rows; i++) {
+    for(int i = 0; i < this->get_rows(); i++) {
         std::swap(this->data[i][c1], this->data[i][c2]);
     }
 }
@@ -108,7 +108,7 @@ template <typename T> Matrix<T> Matrix<T>::transpose(const Matrix<T>& mat) {
 }
 
 // returns an identity matrix of size NxN
-template <typename T> Matrix<T> Matrix<T>::eye(int N) {
+template <typename T> Matrix<T> Matrix<T>::eye(size_t N) {
     Matrix<T> result = {N, N};
     for(int i = 0; i < N; i++) {
         result[i][i] = 1;
@@ -133,13 +133,13 @@ template <typename T> bool Matrix<T>::is_inconsistent() {
     const int free_rows = this->zero_rows();
     const int last_row = this->get_rows() - free_rows - 1;
     bool is_all_zero_but_last = true;
-    for(int elem = 0; elem < this->cols - 1; elem++) {
+    for(int elem = 0; elem < this->get_cols() - 1; elem++) {
         is_all_zero_but_last &= ((*this)[last_row][elem] == 0);
     }
     return is_all_zero_but_last && ((*this)[last_row][this->get_cols() - 1] != 0);
 }
 
-template <typename T> void Matrix<T>::gaussian_elemination() {
+template <typename T> void Matrix<T>::gaussian_elemination(bool mode) {
     for (int row = 0; row < this->get_rows(); row++) {
         T pivot = (*this)[row][row];
         if (pivot != 0) {
@@ -155,7 +155,9 @@ template <typename T> void Matrix<T>::gaussian_elemination() {
                 for (int elem = 0; elem < this->get_cols(); elem++) {
                     (*this)[r][elem] -= multiplier * (*this)[row][elem];
                 }
-                std::cout << *(this) << "\n\n\n";
+                if(!mode) {
+                    std::cout << *(this) << "\n\n\n";
+                }
             }
         }
 
@@ -173,7 +175,13 @@ template <typename T> void Matrix<T>::gaussian_elemination() {
                 row--;
         }
     } // END OF ELIMINATION.
+    if(!mode) {
+        print_solutions();
+    }
+}
 
+template<typename T>
+void Matrix<T>::print_solutions() {
     const int num_of_zero_rows = this->zero_rows();
     if (is_inconsistent()) {
         std::cout << "the system is inconsistent." << std::endl;
@@ -189,7 +197,7 @@ template <typename T> void Matrix<T>::gaussian_elemination() {
                 continue;
             }
             sol += ((*this)[row][i] > 0 ? "-" : "") + std::to_string((*this)[row][i]) + "x" +
-                    std::to_string(i + 1) + " ";
+                   std::to_string(i + 1) + " ";
         }
         sol += ((*this)[row][this->get_cols() - 1] >= 0 ? "+" : "") +
                std::to_string((*this)[row][this->get_cols() - 1]);
@@ -198,12 +206,12 @@ template <typename T> void Matrix<T>::gaussian_elemination() {
     std::reverse(solutions.begin(), solutions.end());
     for (auto &s : solutions)
         std::cout << s << std::endl;
-
 }
 
 template <typename T> Matrix<T> Matrix<T>::upper() {
-    Matrix<T> L{ eye(this->rows) };
-    Matrix<T> tmp_L {eye(this->rows)};
+    Matrix<T> L{ eye(this->get_rows()) };
+    Matrix<T> tmp_L {eye(this->get_rows())};
+
     for (int row = 0; row < this->get_rows(); row++) {
         T pivot = (*this)[row][row];
         if (pivot != 0) {
@@ -211,12 +219,12 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
                 T multiplier = (*this)[successor_row][row] / pivot;
 
                 for (int elem = 0; elem < this->get_cols(); elem++) {
-                    if(elem < successor_row) {
-                        if((*this)[successor_row][elem] != 0) {
-                            tmp_L[successor_row][elem] = multiplier;
-                        }
-                    }
                     (*this)[successor_row][elem] -= multiplier * (*this)[row][elem];
+                    if(elem == row) {
+                        tmp_L = eye(this->get_rows());
+                        tmp_L[successor_row][elem] = -1 * multiplier;
+                        L = tmp_L * L;
+                    }
                 }
             }
         } else {
@@ -225,6 +233,7 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
                 if ((*this)[successor_row][row] != 0) {
                     found_piv = true;
                     exchange_rows(successor_row, row);
+                    L = inverse(permutation_matrix(this->get_rows(), successor_row, row)) * L;
                     break;
                 }
             }
@@ -232,7 +241,7 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
                 row--;
         }
     }
-    return tmp_L;
+    return L;
 }
 
 template<typename T>
@@ -251,14 +260,14 @@ template<typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T> &mat) {
     this->rows = mat.rows;
     this->cols = mat.cols;
-    this->data = mat.data;
+    std::uninitialized_copy(mat.data.begin(), mat.data.end(), this->data.begin());
     return *this;
 }
 
 template<typename T>
 std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
     Matrix<T> mat = m;
-    Matrix<T> L = mat.upper(), U = mat;
+    Matrix<T> L = inverse(mat.upper()), U = mat;
     return {L, U};
 
 }
@@ -287,6 +296,38 @@ bool Matrix<T>::is_symmetric(const Matrix &m) {
 
 template<typename T> Matrix<T>::~Matrix() {
     this->data.clear();
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::permutation_matrix(const size_t &size, const size_t &f, const size_t &s) {
+    auto P = Matrix<T>::eye(size);
+    P.exchange_rows(f, s);
+    return P;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
+    if(A.get_rows() != A.get_cols()) {
+        throw std::runtime_error {"Non-square Matrix."};
+    }
+    Matrix<T> AI = A;
+    const size_t dim = A.get_rows();
+    Matrix<T> I = Matrix<T>::eye(dim);
+    size_t i = 0;
+    for(auto &R : AI.data) {
+        R.insert(R.end(), I[i].begin(), I[i].end());
+        ++i;
+    }
+    I = Matrix<T>{dim, dim}, i = 0;
+    AI.gaussian_elemination(true);
+    for(auto &R : AI.data) {
+        I[i++] = {R.begin(), R.begin() + dim};
+        R.erase(R.begin(), R.begin() + dim);
+    }
+    if(I != eye(dim)) {
+        throw std::runtime_error{"Singular."};
+    }
+    return AI;
 }
 
 template class Matrix<short>;
