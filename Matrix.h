@@ -13,17 +13,18 @@ const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
     std::vector<std::vector<T>> data;
-    int cols, rows;
+    size_t cols, rows;
+    void print_solutions();
 public:
     Matrix();
-    Matrix(int, int, T = T{}); // initialized diminsions.
-    Matrix(T**, int, int);
+    Matrix(size_t, size_t, T = T{}); // initialized diminsions.
+    Matrix(T**, size_t, size_t);
     Matrix(std::initializer_list<std::initializer_list<T>>);
     explicit Matrix(std::vector<std::vector<T>>);
     Matrix<T>& operator=(const Matrix<T> &);
 
-    int get_cols() const {return this->cols;}
-    int get_rows() const {return this->rows;}
+    size_t get_cols() const {return this->data[0].size();}
+    size_t get_rows() const {return this->data.size();}
 
     void exchange_rows(int, int);
     void exchange_cols(int, int);
@@ -48,6 +49,7 @@ public:
             if(i != mat.get_rows() - 1)
                 out << ',' << std::endl;
         }
+        out << std::endl << std::endl;
         return out;
     }
 
@@ -69,6 +71,35 @@ public:
 
     Matrix<T> operator+=(const Matrix<T>&);
     Matrix<T> operator*=(const Matrix<T>&);
+
+    friend bool operator==(const Matrix<T> &a, const Matrix<T> &b) {
+        if(a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
+            return false;
+        }
+        for(int i = 0; i < a.get_rows(); i++) {
+            for(int j = 0; j < a.get_cols(); j++) {
+                if(a[i][j] != b[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    friend bool operator != (const Matrix<T> &a, const Matrix<T> &b) {
+        return !(a == b);
+    }
+    
+        
+    friend Matrix<T> operator - (const Matrix<T>& a) {
+        auto tmp = Matrix<T>{a.data, a.get_rows(), a.get_cols()};
+        for (int i = 0; i < a.get_rows(); i++) {
+            for (int j = 0; j < a.get_cols(); j++) {
+                tmp[i][j] = -1 * tmp[i][j];
+            }
+        }
+        return tmp;
+    }
 
     // rows separated by semicolon.
     friend std::istream& operator>>(std::istream &in, Matrix<T> &mat) {
@@ -104,32 +135,23 @@ public:
         mat = Matrix<T>(tmp_data);
         return in;
     }
-
-    static Matrix<T> eye(int N);
-
-    friend Matrix<T> operator - (const Matrix<T>& a) {
-        auto tmp = Matrix<T> {a.data, a.get_rows(), a.get_cols()};
-        for(int i = 0; i < a.get_rows(); i++) {
-            for(int j = 0; j < a.get_cols(); j++) {
-                tmp[i][j] = -1 * tmp[i][j];
-            }
-        }
-        return tmp;
-    }
-
-
-    std::vector<T>& operator[](int i) {
+    
+    std::vector<T>& operator[](size_t i) {
         return data.at(i);
     }
 
-    std::vector<T> operator[](int i) const {
+    std::vector<T> operator[](size_t i) const {
         return data.at(i);
     }
 
-    void gaussian_elemination();
+    static Matrix<T> eye(size_t N);
+    static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
+    static Matrix<T> inverse(const Matrix<T> &);
+    
+    void gaussian_elemination(bool mode = false);
     int zero_rows();
     bool is_inconsistent();
-
+    
     Matrix<T> upper();
 
     ~Matrix();
