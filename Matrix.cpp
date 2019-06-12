@@ -66,7 +66,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
         }
     }
     // move.
-    this->data = static_cast<std::vector<std::vector<T>>&&>(data_to_copy);
+    this->data = std::move(data_to_copy);
 }
 
 
