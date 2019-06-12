@@ -315,13 +315,15 @@ Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
     Matrix<T> I = Matrix<T>::eye(dim);
     size_t i = 0;
     for(auto &R : AI.data) {
-        R.insert(R.end(), I[i].begin(), I[i].end());
+        R.insert(R.end(),
+                std::make_move_iterator(I[i].begin()),
+                std::make_move_iterator(I[i].end()));
         ++i;
     }
-    I = Matrix<T>{dim, dim}, i = 0;
+    I = Matrix<T> {dim, dim}, i = 0;
     AI.gaussian_elemination(true);
     for(auto &R : AI.data) {
-        I[i++] = {R.begin(), R.begin() + dim};
+        I[i++] = {std::make_move_iterator(R.begin()), std::make_move_iterator(R.begin() + dim)};
         R.erase(R.begin(), R.begin() + dim);
     }
     if(I != eye(dim)) {
