@@ -30,8 +30,8 @@ public:
     size_t get_cols() const {return this->data[0].size();}
     size_t get_rows() const {return this->data.size();}
 
-    void exchange_rows(int, int);
-    void exchange_cols(int, int);
+    void exchange_rows(const size_t &, const size_t &);
+    void exchange_cols(const size_t &, const size_t &);
 
     void fill(const T&);
 
@@ -42,9 +42,9 @@ public:
     static bool is_symmetric(const Matrix &);
 
     friend std::ostream& operator<<(std::ostream &out, const Matrix<T> &mat) {
-        for(int i = 0; i < mat.get_rows(); i++) {
+        for(size_t i = 0; i < mat.get_rows(); i++) {
             out << "{";
-            for(int j = 0; j < mat.get_cols(); j++) {
+            for(size_t j = 0; j < mat.get_cols(); j++) {
                 if(fabs(mat[i][j] - 0) < EPS)
                     out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
                 else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
@@ -63,8 +63,8 @@ public:
         if(a.get_rows() != b. get_rows() || a.get_cols() != b.get_cols())
             throw std::runtime_error{"Matrices of different dimensions cannot be added together"};
         Matrix<T> res {a.get_rows(), a.get_cols()};
-        for(int i = 0; i < res.get_rows(); i++) {
-            for(int j = 0; j < res.get_cols(); j++)
+        for(size_t i = 0; i < res.get_rows(); i++) {
+            for(size_t j = 0; j < res.get_cols(); j++)
                 res[i][j] = (a[i][j] + b[i][j]);
         }
         return res;
@@ -82,8 +82,8 @@ public:
         if(a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
             return false;
         }
-        for(int i = 0; i < a.get_rows(); i++) {
-            for(int j = 0; j < a.get_cols(); j++) {
+        for(size_t i = 0; i < a.get_rows(); i++) {
+            for(size_t j = 0; j < a.get_cols(); j++) {
                 if(a[i][j] != b[i][j]) {
                     return false;
                 }
@@ -99,8 +99,8 @@ public:
         
     friend Matrix<T> operator - (const Matrix<T>& a) {
         auto tmp = Matrix<T>{a.data, a.get_rows(), a.get_cols()};
-        for (int i = 0; i < a.get_rows(); i++) {
-            for (int j = 0; j < a.get_cols(); j++) {
+        for(size_t i = 0; i < a.get_rows(); i++) {
+            for(size_t j = 0; j < a.get_cols(); j++) {
                 tmp[i][j] = -1 * tmp[i][j];
             }
         }
@@ -115,11 +115,11 @@ public:
         while (getline(in, tmp) && tmp.find(']') == std::string::npos)
             raw_form += tmp;
         raw_form += tmp;
-        raw_form.erase(raw_form.begin());
-        raw_form.erase(raw_form.end() - 1);
+        raw_form.erase(std::begin(raw_form));
+        raw_form.erase(std::end(raw_form) - 1);
 
-        size_t num_rows = std::count_if(raw_form.begin(), raw_form.end(), [](int c) { return c == ';';});
-        std::replace_if(raw_form.begin(), raw_form.end(), [](int c) { return c == ';';}, '\n');
+        size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';';});
+        std::replace_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';';}, '\n');
         std::stringstream ss(raw_form);
         std::vector<std::vector<T>> tmp_data(num_rows, std::vector<T>());
         int i = 0;
@@ -142,20 +142,22 @@ public:
         return in;
     }
     
-    std::vector<T>& operator[](size_t i) {
+    std::vector<T>& operator[](const size_t &i) {
         return data.at(i);
     }
 
-    std::vector<T> operator[](size_t i) const {
+    std::vector<T> operator[](const size_t &i) const {
         return data.at(i);
     }
 
-    static Matrix<T> eye(size_t N);
+    static Matrix<T> eye(const size_t &N);
+    static Matrix<T> pascal(const size_t &N);
+
     static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
     static Matrix<T> inverse(const Matrix<T> &);
     
     void gaussian_elimination(bool mode = false);
-    int zero_rows();
+    size_t zero_rows();
     bool zero_row(const size_t &);
     bool is_inconsistent();
     
