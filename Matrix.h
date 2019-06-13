@@ -13,15 +13,19 @@ const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
     std::vector<std::vector<T>> data;
-    size_t cols, rows;
     void print_solutions();
 public:
-    Matrix();
+    Matrix() = default;
     Matrix(size_t, size_t, T = T{}); // initialized diminsions.
     Matrix(T**, size_t, size_t);
     Matrix(std::initializer_list<std::initializer_list<T>>);
     explicit Matrix(std::vector<std::vector<T>>);
-    Matrix<T>& operator=(const Matrix<T> &);
+
+    Matrix(const Matrix<T> &) = default;
+    Matrix(Matrix<T> &&) noexcept = default;
+
+    Matrix<T>& operator=(const Matrix<T> &) = default;
+    Matrix<T>& operator=(Matrix<T> &&) noexcept = default;
 
     size_t get_cols() const {return this->data[0].size();}
     size_t get_rows() const {return this->data.size();}
