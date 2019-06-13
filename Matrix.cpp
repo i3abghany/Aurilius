@@ -23,7 +23,7 @@ template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t C
 
 template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
     int ROWS = data_to_copy.size();
-    int COLS = data_to_copy.begin()->size();
+    int COLS = std::begin(data_to_copy)->size();
     for(auto row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
@@ -45,8 +45,7 @@ template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_l
 
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
-    int ROWS = data_to_copy.size();
-    int COLS = data_to_copy.begin()->size();
+    int COLS = std::begin(data_to_copy)->size();
     for(auto &row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
@@ -322,16 +321,16 @@ Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
     Matrix<T> I = Matrix<T>::eye(dim);
     size_t i = 0;
     for(auto &R : AI.data) {
-        R.insert(R.end(),
-                std::make_move_iterator(I[i].begin()),
-                std::make_move_iterator(I[i].end()));
+        R.insert(std::end(R),
+                std::make_move_iterator(std::begin(I[i])),
+                std::make_move_iterator(std::end(I[i])));
         ++i;
     }
     I = Matrix<T> {dim, dim}, i = 0;
     AI.gaussian_elimination(true);
     for(auto &R : AI.data) {
-        I[i++] = {std::make_move_iterator(R.begin()), std::make_move_iterator(R.begin() + dim)};
-        R.erase(R.begin(), R.begin() + dim);
+        I[i++] = {std::make_move_iterator(std::begin(R)), std::make_move_iterator(std::begin(R) + dim)};
+        R.erase(std::begin(R), std::begin(R) + dim);
     }
     if(I != eye(dim)) {
         throw std::runtime_error{"Singular."};
@@ -346,6 +345,13 @@ bool Matrix<T>::zero_row(const size_t &i) {
         is_free_row &= ((*this)[i][j] == 0);
     }
     return is_free_row;
+}
+
+template<typename T>
+void Matrix<T>::fill(const T& val) {
+    for(auto &R : this->data) {
+        std::fill(std::begin(R), std::end(R), val);
+    }
 }
 
 

@@ -33,6 +33,8 @@ public:
     void exchange_rows(int, int);
     void exchange_cols(int, int);
 
+    void fill(const T&);
+
     static Matrix<T> matmul(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> transpose(const Matrix<T> &);
     static Matrix<T> upper(Matrix<T>);
