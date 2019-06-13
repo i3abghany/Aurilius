@@ -2,25 +2,17 @@
 #include <algorithm>
 #include "Matrix.h"
 
-template <typename T> Matrix<T>::Matrix()
-                    : cols(0), rows(0),
-                    data(std::vector<std::vector<T>>()) {}
-
 template <typename T> Matrix<T>::Matrix(size_t ROWS, size_t COLS, T initial) {
-    this->rows = ROWS;
-    this->cols = COLS;
-    this->data.resize(this->rows);
+    this->data.resize(ROWS);
     for(size_t i = 0; i < this->data.size(); i++) {
-        this->data[i].resize(this->cols, initial);
+        this->data[i].resize(COLS, initial);
     }
 }
 
 template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t COLS) {
-    this->cols = COLS;
-    this->rows = ROWS;
-    this->data.resize(this->rows);
+    this->data.resize(ROWS);
     for(size_t i = 0; i < this->data.size(); i++) {
-        this->data[i].resize(this->cols);
+        this->data[i].resize(COLS);
     }
     for(int i = 0; i < ROWS; i++) {
         for(int j = 0; j < COLS; j++) {
@@ -32,16 +24,14 @@ template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t C
 template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
     int ROWS = data_to_copy.size();
     int COLS = data_to_copy.begin()->size();
-    this->rows = ROWS;
-    this->cols = COLS;
     for(auto row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
     }
-    this->data.resize(this->rows);
+    this->data.resize(ROWS);
     for(size_t i = 0; i < this->data.size(); i++) {
-        this->data[i].resize(this->cols);
+        this->data[i].resize(COLS);
     }
     int i = 0, j = 0;
     for(auto row : data_to_copy) {
@@ -53,22 +43,17 @@ template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_l
     }
 }
 
-
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
     int ROWS = data_to_copy.size();
     int COLS = data_to_copy.begin()->size();
-    this->rows = ROWS;
-    this->cols = COLS;
     for(auto &row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
     }
-    // move.
-    this->data = std::move(data_to_copy);
+    this->data = data_to_copy;
 }
-
 
 template<typename T> void Matrix<T>::exchange_cols(int c1, int c2) {
     for(int i = 0; i < this->get_rows(); i++) {
@@ -161,7 +146,7 @@ template <typename T> void Matrix<T>::gaussian_elemination(bool mode) {
             }
         }
 
-            // if a pivot is equal to 0, free column.
+        // if a pivot is equal to 0, free column.
         else /* if(pivot == 0) */ {
             bool found_piv = false;
             for (int successor_row = row + 1; successor_row < this->get_rows(); successor_row++) {
@@ -257,14 +242,6 @@ Matrix<T> Matrix<T>::operator*=(const Matrix<T> &m) {
 }
 
 template<typename T>
-Matrix<T>& Matrix<T>::operator=(const Matrix<T> &mat) {
-    this->rows = mat.rows;
-    this->cols = mat.cols;
-    std::uninitialized_copy(mat.data.begin(), mat.data.end(), this->data.begin());
-    return *this;
-}
-
-template<typename T>
 std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
     Matrix<T> mat = m;
     Matrix<T> L = inverse(mat.upper()), U = mat;
@@ -280,10 +257,10 @@ Matrix<T> Matrix<T>::upper(Matrix<T> m) {
 
 template<typename T>
 bool Matrix<T>::is_symmetric(const Matrix &m) {
-    if(m.rows != m.cols) {
+    if(m.get_rows() != m.get_cols()) {
         return false;
     }
-    for(int i = 0; i < m.rows; ++i) {
+    for(int i = 0; i < m.get_rows(); ++i) {
         for(int j = 0; j < i; ++j) {
             if(m[i][j] != m[j][i]) {
                 return false;
@@ -331,6 +308,7 @@ Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
     }
     return AI;
 }
+
 
 template class Matrix<short>;
 template class Matrix<int>;
