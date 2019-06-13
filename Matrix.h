@@ -13,7 +13,7 @@ const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
     std::vector<std::vector<T>> data;
-    void print_solutions();
+    void print_solutions(const std::vector<size_t> &);
 public:
     Matrix() = default;
     Matrix(size_t, size_t, T = T{}); // initialized diminsions.
@@ -152,8 +152,9 @@ public:
     static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
     static Matrix<T> inverse(const Matrix<T> &);
     
-    void gaussian_elemination(bool mode = false);
+    void gaussian_elimination(bool mode = false);
     int zero_rows();
+    bool zero_row(const size_t &);
     bool is_inconsistent();
     
     Matrix<T> upper();
