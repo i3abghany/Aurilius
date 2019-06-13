@@ -107,6 +107,19 @@ public:
         return tmp;
     }
 
+    friend Matrix<T> operator * (Matrix<T> mat, const T &b) {
+        for(size_t i = 0; i < mat.get_rows(); i++) {
+            for(size_t j = 0; j < mat.get_cols(); j++) {
+                mat[i][j] *= b;
+            }
+        }
+        return mat;
+    }
+
+    friend Matrix<T> operator * (const T &b, Matrix<T> mat) {
+        return mat * b;
+    }
+
     // rows separated by semicolon.
     friend std::istream& operator>>(std::istream &in, Matrix<T> &mat) {
         // [1 2 3; 4 5 6; 7 8 9;]
