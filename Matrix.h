@@ -16,7 +16,7 @@ template<typename T> class Matrix {
     void print_solutions(const std::vector<size_t> &);
 public:
     Matrix() = default;
-    Matrix(size_t, size_t, T = T{}); // initialized diminsions.
+    Matrix(size_t, size_t, T = T{}); // initialized dimensions.
     Matrix(T**, size_t, size_t);
     Matrix(std::initializer_list<std::initializer_list<T>>);
     explicit Matrix(std::vector<std::vector<T>>);
@@ -27,8 +27,19 @@ public:
     Matrix<T>& operator=(const Matrix<T> &) = default;
     Matrix<T>& operator=(Matrix<T> &&) noexcept = default;
 
-    size_t get_cols() const {return this->data[0].size();}
-    size_t get_rows() const {return this->data.size();}
+    size_t cols() const {return this->data[0].size();}
+    size_t rows() const {return this->data.size();}
+
+    void add_row(const std::vector<T> &);
+    void add_col(const std::vector<T> &);
+
+
+    void tuck_rows(const Matrix<T> &);
+    void tuck_cols(const Matrix<T> &);
+
+    void tuck_rows(const std::vector<std::vector<T>> &);
+    void tuck_cols(const std::vector<std::vector<T>> &);
+
 
     void exchange_rows(const size_t &, const size_t &);
     void exchange_cols(const size_t &, const size_t &);
@@ -42,17 +53,17 @@ public:
     static bool is_symmetric(const Matrix &);
 
     friend std::ostream& operator<<(std::ostream &out, const Matrix<T> &mat) {
-        for(size_t i = 0; i < mat.get_rows(); i++) {
+        for (size_t i = 0; i < mat.rows(); i++) {
             out << "{";
-            for(size_t j = 0; j < mat.get_cols(); j++) {
-                if(fabs(mat[i][j] - 0) < EPS)
+            for (size_t j = 0; j < mat.cols(); j++) {
+                if (fabs(mat[i][j] - 0) < EPS)
                     out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
                 else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
-                if(j != mat.get_cols() - 1)
+                if (j != mat.cols() - 1)
                     out << ' ';
             }
             out << "}";
-            if(i != mat.get_rows() - 1)
+            if (i != mat.rows() - 1)
                 out << ',' << std::endl;
         }
         out << std::endl << std::endl;
@@ -60,11 +71,11 @@ public:
     }
 
     friend Matrix<T> operator + (const Matrix<T>& a, const Matrix<T>& b) {
-        if(a.get_rows() != b. get_rows() || a.get_cols() != b.get_cols())
+        if (a.rows() != b.rows() || a.cols() != b.cols())
             throw std::runtime_error{"Matrices of different dimensions cannot be added together"};
-        Matrix<T> res {a.get_rows(), a.get_cols()};
-        for(size_t i = 0; i < res.get_rows(); i++) {
-            for(size_t j = 0; j < res.get_cols(); j++)
+        Matrix<T> res{a.rows(), a.cols()};
+        for (size_t i = 0; i < res.rows(); i++) {
+            for (size_t j = 0; j < res.cols(); j++)
                 res[i][j] = (a[i][j] + b[i][j]);
         }
         return res;
@@ -79,12 +90,12 @@ public:
     Matrix<T> operator*=(const Matrix<T>&);
 
     friend bool operator==(const Matrix<T> &a, const Matrix<T> &b) {
-        if(a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
+        if (a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
             return false;
         }
-        for(size_t i = 0; i < a.get_rows(); i++) {
-            for(size_t j = 0; j < a.get_cols(); j++) {
-                if(a[i][j] != b[i][j]) {
+        for (size_t i = 0; i < a.rows(); i++) {
+            for (size_t j = 0; j < a.cols(); j++) {
+                if (a[i][j] != b[i][j]) {
                     return false;
                 }
             }
@@ -98,9 +109,9 @@ public:
     
         
     friend Matrix<T> operator - (const Matrix<T>& a) {
-        auto tmp = Matrix<T>{a.data, a.get_rows(), a.get_cols()};
-        for(size_t i = 0; i < a.get_rows(); i++) {
-            for(size_t j = 0; j < a.get_cols(); j++) {
+        auto tmp = Matrix<T>{a.data, a.rows(), a.cols()};
+        for (size_t i = 0; i < a.rows(); i++) {
+            for (size_t j = 0; j < a.cols(); j++) {
                 tmp[i][j] = -1 * tmp[i][j];
             }
         }
@@ -108,8 +119,8 @@ public:
     }
 
     friend Matrix<T> operator * (Matrix<T> mat, const T &b) {
-        for(size_t i = 0; i < mat.get_rows(); i++) {
-            for(size_t j = 0; j < mat.get_cols(); j++) {
+        for (size_t i = 0; i < mat.rows(); i++) {
+            for (size_t j = 0; j < mat.cols(); j++) {
                 mat[i][j] *= b;
             }
         }
@@ -131,23 +142,23 @@ public:
         raw_form.erase(std::begin(raw_form));
         raw_form.erase(std::end(raw_form) - 1);
 
-        size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';';});
-        std::replace_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';';}, '\n');
+        size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';'; });
+        std::replace_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';'; }, '\n');
         std::stringstream ss(raw_form);
         std::vector<std::vector<T>> tmp_data(num_rows, std::vector<T>());
         int i = 0;
-        while(getline(ss, tmp)) {
+        while (getline(ss, tmp)) {
             std::stringstream row_ss(tmp);
             T data_member;
-            while(row_ss >> data_member) {
+            while (row_ss >> data_member) {
                 tmp_data[i].push_back(data_member);
             }
             i++;
         }
         size_t r = tmp_data.size();
         size_t c = tmp_data[0].size();
-        for(auto ro : tmp_data) {
-            if(ro.size() != c) {
+        for (auto ro : tmp_data) {
+            if (ro.size() != c) {
                 throw std::runtime_error{"Rows can't have different numbers of elements."};
             }
         }
@@ -165,7 +176,7 @@ public:
 
     static Matrix<T> eye(const size_t &N);
     static Matrix<T> pascal(const size_t &N);
-
+    static Matrix<T> zeros(const size_t &rows, const size_t &cols);
     static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
     static Matrix<T> inverse(const Matrix<T> &);
     

@@ -4,18 +4,18 @@
 
 template <typename T> Matrix<T>::Matrix(size_t ROWS, size_t COLS, T initial) {
     this->data.resize(ROWS);
-    for(size_t i = 0; i < this->data.size(); i++) {
+    for (size_t i = 0; i < this->data.size(); i++) {
         this->data[i].resize(COLS, initial);
     }
 }
 
 template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t COLS) {
     this->data.resize(ROWS);
-    for(size_t i = 0; i < this->data.size(); i++) {
+    for (size_t i = 0; i < this->data.size(); i++) {
         this->data[i].resize(COLS);
     }
-    for(size_t i = 0; i < ROWS; i++) {
-        for(size_t j = 0; j < COLS; j++) {
+    for (size_t i = 0; i < ROWS; i++) {
+        for (size_t j = 0; j < COLS; j++) {
             this->data[i][j] = data_to_copy[i][j];
         }
     }
@@ -24,18 +24,18 @@ template <typename T> Matrix<T>::Matrix(T ** data_to_copy, size_t ROWS, size_t C
 template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) {
     int ROWS = data_to_copy.size();
     int COLS = std::begin(data_to_copy)->size();
-    for(auto row : data_to_copy) {
+    for (auto row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
     }
     this->data.resize(ROWS);
-    for(size_t i = 0; i < this->data.size(); i++) {
+    for (size_t i = 0; i < this->data.size(); i++) {
         this->data[i].resize(COLS);
     }
     int i = 0, j = 0;
-    for(auto row : data_to_copy) {
-        for(auto el : row) {
+    for (auto row : data_to_copy) {
+        for (auto el : row) {
             this->data[i][j++] = el;
         }
         i++;
@@ -46,7 +46,7 @@ template <typename T> Matrix<T>::Matrix(std::initializer_list<std::initializer_l
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
     int COLS = std::begin(data_to_copy)->size();
-    for(auto &row : data_to_copy) {
+    for (auto &row : data_to_copy) {
         if (row.size() != COLS) {
             throw std::runtime_error{"Rows can't have different numbers of elements."};
         }
@@ -55,7 +55,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
 }
 
 template<typename T> void Matrix<T>::exchange_cols(const size_t &c1, const size_t &c2) {
-    for(size_t i = 0; i < this->get_rows(); i++) {
+    for (size_t i = 0; i < this->rows(); i++) {
         std::swap(this->data[i][c1], this->data[i][c2]);
     }
 }
@@ -68,12 +68,12 @@ template <typename T> void Matrix<T>::exchange_rows(const size_t &r1, const size
 // Matrix multiplication.
 template <typename T> Matrix<T> Matrix<T>::matmul(const Matrix<T> & first, const Matrix<T> & second) {
 
-    if(first.get_cols() != second.get_rows())
+    if (first.cols() != second.rows())
         throw std::runtime_error{"Size doesn't match for matrix multiplication."};
-    Matrix<T> result{first.get_rows(), second.get_cols()};
-    for(size_t i = 0; i < first.get_rows(); i++) {
-        for(size_t j = 0; j < second.get_cols(); j++) {
-            for(size_t k = 0; k < first.get_cols(); k++) {
+    Matrix<T> result{first.rows(), second.cols()};
+    for (size_t i = 0; i < first.rows(); i++) {
+        for (size_t j = 0; j < second.cols(); j++) {
+            for (size_t k = 0; k < first.cols(); k++) {
                 result[i][j] += first[i][k] * second[k][j];
             }
         }
@@ -83,9 +83,9 @@ template <typename T> Matrix<T> Matrix<T>::matmul(const Matrix<T> & first, const
 
 // Transposes a matrix and returns the transposed copy.
 template <typename T> Matrix<T> Matrix<T>::transpose(const Matrix<T>& mat) {
-    Matrix<T> result{mat.get_cols(), mat.get_rows()};
-    for(size_t i = 0; i < result.get_rows(); i++) {
-        for(size_t j = 0; j < result.get_cols(); j++) {
+    Matrix<T> result{mat.cols(), mat.rows()};
+    for (size_t i = 0; i < result.rows(); i++) {
+        for (size_t j = 0; j < result.cols(); j++) {
             result[i][j] = mat[j][i];
         }
     }
@@ -95,7 +95,7 @@ template <typename T> Matrix<T> Matrix<T>::transpose(const Matrix<T>& mat) {
 // returns an identity matrix of size NxN
 template <typename T> Matrix<T> Matrix<T>::eye(const size_t &N) {
     Matrix<T> result = {N, N};
-    for(size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
         result[i][i] = 1;
     }
     return result;
@@ -104,11 +104,11 @@ template <typename T> Matrix<T> Matrix<T>::eye(const size_t &N) {
 template <typename T> Matrix<T> Matrix<T>::pascal(const size_t &N) {
     Matrix<T> result{N, N, T{0}};
     std::vector<T> &first_row = *std::begin(result.data);
-    for(size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
         result[i][0] = 1;
     }
-    for(size_t i = 1; i < N; i++) {
-        for(size_t j = 1; j < N; j++) {
+    for (size_t i = 1; i < N; i++) {
+        for (size_t j = 1; j < N; j++) {
             result.data[i][j] = result.data[i - 1][j] + result.data[i - 1][j - 1];
         }
     }
@@ -117,36 +117,36 @@ template <typename T> Matrix<T> Matrix<T>::pascal(const size_t &N) {
 
 // returns the number of zero rows in the end of the matrix.
 template <typename T> size_t Matrix<T>::zero_rows() {
-    size_t rank = this->get_rows();
-    for(size_t i = 0; i < this->get_rows(); i++) {
+    size_t rank = this->rows();
+    for (size_t i = 0; i < this->rows(); i++) {
         bool is_free_row = zero_row(i);
-        if(is_free_row) {
+        if (is_free_row) {
             rank--;
         }
     }
-    return this->get_rows() - rank;
+    return this->rows() - rank;
 }
 
 // only applied after elimination, checks if the last non-zero row has all zeros but b (in Ax=b) is not zero.
 template <typename T> bool Matrix<T>::is_inconsistent() {
     const size_t free_rows = this->zero_rows();
-    const size_t last_row = this->get_rows() - free_rows - 1;
+    const size_t last_row = this->rows() - free_rows - 1;
     bool is_all_zero_but_last = true;
-    for(size_t elem = 0; elem < this->get_cols() - 1; elem++) {
+    for (size_t elem = 0; elem < this->cols() - 1; elem++) {
         is_all_zero_but_last &= ((*this)[last_row][elem] == 0);
     }
-    return is_all_zero_but_last && ((*this)[last_row][this->get_cols() - 1] != 0);
+    return is_all_zero_but_last && ((*this)[last_row][this->cols() - 1] != 0);
 }
 
 template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
     std::vector<size_t> piv_idxs;
     bool free_col = false;
-    for(size_t row = 0; row < this->get_rows(); row++) {
+    for (size_t row = 0; row < this->rows(); row++) {
         T pivot = (*this)[row][row];
         int piv_idx = row;
-        if(free_col) {
-            for(size_t c = row; c < this->get_rows(); c++) {
-                if((*this)[row][c] != 0) {
+        if (free_col) {
+            for (size_t c = row; c < this->rows(); c++) {
+                if ((*this)[row][c] != 0) {
                     pivot = (*this)[row][c];
                     piv_idx = c;
                     break;
@@ -155,27 +155,27 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
         }
         if (pivot != 0) {
             if (pivot != 1) {
-                for(size_t elem = 0; elem < this->get_cols(); elem++)
+                for (size_t elem = 0; elem < this->cols(); elem++)
                     (*this)[row][elem] /= pivot;
             }
             piv_idxs.push_back(piv_idx);
-            for(size_t r = 0; r < this->get_rows(); r++) {
+            for (size_t r = 0; r < this->rows(); r++) {
                 if (r == row)
                     continue;
                 T multiplier = (*this)[r][piv_idx/* row */];
-                for(size_t elem = 0; elem < this->get_cols(); elem++) {
+                for (size_t elem = 0; elem < this->cols(); elem++) {
                     (*this)[r][elem] -= multiplier * (*this)[row][elem];
                 }
-                if(!mode) {
+                if (!mode) {
                     std::cout << *(this) << "\n\n\n";
                 }
             }
         }
 
-        // if a pivot is equal to 0, free column.
+            // if a pivot is equal to 0, free column.
         else /* if(pivot == 0) */ {
             bool found_piv = false;
-            for (size_t successor_row = row + 1; successor_row < this->get_rows(); successor_row++) {
+            for (size_t successor_row = row + 1; successor_row < this->rows(); successor_row++) {
                 if ((*this)[successor_row][row] != 0) {
                     found_piv = true;
                     exchange_rows(successor_row, row);
@@ -184,14 +184,21 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
             }
 
             bool finish = true;
-            for(size_t fr = row; fr < this->get_rows(); fr++) {
+            for (size_t fr = row; fr < this->rows(); fr++) {
                 finish &= zero_row(fr);
             }
-            if(!finish) row--;
+            if (!finish) row--;
             free_col = !found_piv;
         }
     } // END OF ELIMINATION.
-    if(!mode) {
+    for(int i = 0; i < this->rows(); i++) {
+        for (int j = 0; j < this->cols(); j++) {
+            if (fabs(this->data[i][j]) <= EPS) {
+                this->data[i][j] = T{0};
+            }
+        }
+    }
+    if (!mode) {
         print_solutions(piv_idxs);
     }
 }
@@ -205,18 +212,21 @@ void Matrix<T>::print_solutions(const std::vector<size_t> &piv_idxs) {
     }
     std::vector<std::string> solutions;
     std::cout << std::endl;
-    for(size_t row = 0; row < this->get_rows() && !zero_row(row); row++) {
-        std::string sol = ("x" + std::to_string(piv_idxs[row]) + " = ");
-        for(size_t i = piv_idxs[row] + 1; i < this->get_cols() - 1; i++) {
-            if(fabs((*this)[row][i]) <= EPS) {
+    for (size_t row = 0; row < this->rows() && !zero_row(row); row++) {
+        std::string sol = ("x" + std::to_string(piv_idxs[row] + 1) + " = ");
+        for (size_t i = piv_idxs[row] + 1; i < this->cols() - 1; i++) {
+            if (fabs((*this)[row][i]) <= EPS) {
                 (*this)[row][i] = 0;
                 continue;
             }
+
             sol += ((*this)[row][i] > 0 ? "-" : "") + std::to_string((*this)[row][i]) + "x" +
-                    std::to_string(i + 1) + " ";
+                   std::to_string(i + 1) + " ";
         }
-        sol += ((*this)[row][this->get_cols() - 1] >= 0 ? "+" : "") +
-                std::to_string((*this)[row][this->get_cols() - 1]);
+        sol += ((*this)[row][this->cols() - 1] > 0 ? "+ " : "");
+        if((*this)[row][this->cols() - 1] != 0) {
+            sol += std::to_string((*this)[row][this->cols() - 1]);
+        }
         solutions.push_back(sol);
     }
 
@@ -225,15 +235,15 @@ void Matrix<T>::print_solutions(const std::vector<size_t> &piv_idxs) {
 }
 
 template <typename T> Matrix<T> Matrix<T>::upper() {
-    Matrix<T> L{ eye(this->get_rows()) };
-    Matrix<T> tmp_L {eye(this->get_rows())};
+    Matrix<T> L{eye(this->rows())};
+    Matrix<T> tmp_L{eye(this->rows())};
     bool free_col = false;
-    for (size_t row = 0; row < this->get_rows(); row++) {
+    for (size_t row = 0; row < this->rows(); row++) {
         T pivot = (*this)[row][row];
         int piv_idx = row;
-        if(free_col) {
-            for(size_t c = row; c < this->get_rows(); c++) {
-                if((*this)[row][c] != 0) {
+        if (free_col) {
+            for (size_t c = row; c < this->rows(); c++) {
+                if ((*this)[row][c] != 0) {
                     pivot = (*this)[row][c];
                     piv_idx = c;
                     break;
@@ -241,13 +251,13 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
             }
         }
         if (pivot != 0) {
-            for (size_t successor_row = row + 1; successor_row < this->get_rows(); successor_row++) {
+            for (size_t successor_row = row + 1; successor_row < this->rows(); successor_row++) {
                 T multiplier = (*this)[successor_row][/*row*/piv_idx] / pivot;
 
-                for (size_t elem = 0; elem < this->get_cols(); elem++) {
+                for (size_t elem = 0; elem < this->cols(); elem++) {
                     (*this)[successor_row][elem] -= multiplier * (*this)[row][elem];
-                    if(elem == row) {
-                        tmp_L = eye(this->get_rows());
+                    if (elem == row) {
+                        tmp_L = eye(this->rows());
                         tmp_L[successor_row][elem] = -1 * multiplier;
                         L = tmp_L * L;
                     }
@@ -255,19 +265,19 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
             }
         } else {
             bool found_piv = false;
-            for (size_t successor_row = row + 1; successor_row < this->get_rows(); successor_row++) {
+            for (size_t successor_row = row + 1; successor_row < this->rows(); successor_row++) {
                 if ((*this)[successor_row][row] != 0) {
                     found_piv = true;
                     exchange_rows(successor_row, row);
-                    L = inverse(permutation_matrix(this->get_rows(), successor_row, row)) * L;
+                    L = inverse(permutation_matrix(this->rows(), successor_row, row)) * L;
                     break;
                 }
             }
             bool finish = true;
-            for(size_t fr = row; fr < this->get_rows(); fr++) {
+            for (size_t fr = row; fr < this->rows(); fr++) {
                 finish &= zero_row(fr);
             }
-            if(!finish) row--;
+            if (!finish) row--;
             free_col = !found_piv;
         }
     }
@@ -302,12 +312,12 @@ Matrix<T> Matrix<T>::upper(Matrix<T> m) {
 
 template<typename T>
 bool Matrix<T>::is_symmetric(const Matrix &m) {
-    if(m.get_rows() != m.get_cols()) {
+    if (m.rows() != m.cols()) {
         return false;
     }
-    for(size_t i = 0; i < m.get_rows(); ++i) {
-        for(size_t j = 0; j < i; ++j) {
-            if(m[i][j] != m[j][i]) {
+    for (size_t i = 0; i < m.rows(); ++i) {
+        for (size_t j = 0; j < i; ++j) {
+            if (m[i][j] != m[j][i]) {
                 return false;
             }
         }
@@ -315,40 +325,35 @@ bool Matrix<T>::is_symmetric(const Matrix &m) {
     return true;
 }
 
-
-template<typename T> Matrix<T>::~Matrix() {
-    this->data.clear();
-}
-
 template<typename T>
-Matrix<T> Matrix<T>::permutation_matrix(const size_t &size, const size_t &f, const size_t &s) {
+Matrix<T> Matrix<T>::permutation_matrix(const size_t &size, const size_t &first_row, const size_t &second_row) {
     auto P = Matrix<T>::eye(size);
-    P.exchange_rows(f, s);
+    P.exchange_rows(first_row, second_row);
     return P;
 }
 
 template<typename T>
 Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
-    if(A.get_rows() != A.get_cols()) {
-        throw std::runtime_error {"Non-square Matrix."};
+    if (A.rows() != A.cols()) {
+        throw std::runtime_error{"Non-square Matrix."};
     }
     Matrix<T> AI = A;
-    const size_t dim = A.get_rows();
+    const size_t dim = A.rows();
     Matrix<T> I = Matrix<T>::eye(dim);
     size_t i = 0;
-    for(auto &R : AI.data) {
+    for (auto &R : AI.data) {
         R.insert(std::end(R),
-                std::make_move_iterator(std::begin(I[i])),
-                std::make_move_iterator(std::end(I[i])));
+                 std::make_move_iterator(std::begin(I[i])),
+                 std::make_move_iterator(std::end(I[i])));
         ++i;
     }
-    I = Matrix<T> {dim, dim}, i = 0;
+    I = Matrix<T>{dim, dim}, i = 0;
     AI.gaussian_elimination(true);
-    for(auto &R : AI.data) {
+    for (auto &R : AI.data) {
         I[i++] = {std::make_move_iterator(std::begin(R)), std::make_move_iterator(std::begin(R) + dim)};
         R.erase(std::begin(R), std::begin(R) + dim);
     }
-    if(I != eye(dim)) {
+    if (I != eye(dim)) {
         throw std::runtime_error{"Singular."};
     }
     return AI;
@@ -357,7 +362,7 @@ Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
 template<typename T>
 bool Matrix<T>::zero_row(const size_t &i) {
     bool is_free_row = true;
-    for(size_t j = 0; j < this->get_cols(); j++) {
+    for (size_t j = 0; j < this->cols(); j++) {
         is_free_row &= ((*this)[i][j] == 0);
     }
     return is_free_row;
@@ -365,9 +370,69 @@ bool Matrix<T>::zero_row(const size_t &i) {
 
 template<typename T>
 void Matrix<T>::fill(const T& val) {
-    for(auto &R : this->data) {
+    for (auto &R : this->data) {
         std::fill(std::begin(R), std::end(R), val);
     }
+}
+
+
+template<typename T> Matrix<T>::~Matrix() {
+    this->data.clear();
+}
+
+template<typename T>
+void Matrix<T>::add_row(const std::vector<T> &r) {
+    if(r.size() != this->cols()) {
+        throw std::runtime_error("Row size not consistent with the matrix size.");
+    }
+    this->data.push_back(r);
+}
+
+template<typename T>
+void Matrix<T>::add_col(const std::vector<T> &c) {
+    size_t i = 0;
+    if(c.size() != this->rows()) {
+        throw std::runtime_error("Column size not consistent with the matrix size.");
+    }
+    for(auto &R : this->data) {
+        R.push_back(c[i++]);
+    }
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::zeros(const size_t &r, const size_t &c) {
+    return Matrix<T> {r, c, T{0}};
+}
+
+template<typename T>
+void Matrix<T>::tuck_rows(const Matrix<T> &m) {
+    if(m.cols() != this->cols()) {
+        throw std::runtime_error("Invalid size of tucked matrix.");
+    }
+    for(auto &R : m.data) {
+        this->add_row(R);
+    }
+}
+
+template<typename T>
+void Matrix<T>::tuck_cols(const Matrix<T> &m) {
+    for(int i = 0; i < m.cols(); i++) {
+        std::vector<T> col;
+        for(int j = 0; j < m.rows(); j++) {
+            col.push_back(m[j][i]);
+        }
+        this->add_col(col);
+    }
+}
+
+template<typename T>
+void Matrix<T>::tuck_rows(const std::vector<std::vector<T>> &v) {
+    this->tuck_rows(Matrix<T> {v});
+}
+
+template<typename T>
+void Matrix<T>::tuck_cols(const std::vector<std::vector<T>> &v) {
+    this->tuck_cols(Matrix<T> {v});
 }
 
 
