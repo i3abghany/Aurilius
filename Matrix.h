@@ -10,29 +10,19 @@
 #include <sstream>
 #include <type_traits>
 
-
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
-
 const double EPS = std::numeric_limits<double>::epsilon();
+
+template <typename T>
+std::ostream &operator<<(std::ostream &out, const std::vector<T> &p) {
+    out << "{";
+    for (size_t j = 0; j < p.size(); j++) {
+        out << std::fixed << std::setprecision(3) << std::setw(6) << p[j];
+        if (j != p.size() - 1) {
+            out << ' ';
+        }
+    }
+    return out << "}" << std::endl;
+}
 
 template<typename T> class Matrix {
     static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
@@ -54,6 +44,7 @@ public:
 
     size_t cols() const {return this->data[0].size();}
     size_t rows() const {return this->data.size();}
+    std::pair<size_t, size_t> size() {return {cols(), rows()};}
 
     void add_row(const std::vector<T> &);
     void add_col(const std::vector<T> &);
@@ -63,6 +54,13 @@ public:
 
     void exchange_rows(const size_t &, const size_t &);
     void exchange_cols(const size_t &, const size_t &);
+
+    static T dot_prod(const Matrix<T> &, const Matrix<T> &);
+    static Matrix<T> project(const Matrix<T> &, const std::vector<T> &);
+    static Matrix<T> project_into_col_space(const Matrix<T> &, const Matrix<T> &);
+
+    static Matrix<T> col_matrix(const std::vector<T> &);
+    static Matrix<T> row_matrix(const std::vector<T> &);
 
     void fill(const T&);
 
@@ -74,17 +72,18 @@ public:
 
     friend std::ostream& operator<<(std::ostream &out, const Matrix<T> &mat) {
         for (size_t i = 0; i < mat.rows(); i++) {
-            out << "{";
-            for (size_t j = 0; j < mat.cols(); j++) {
-                if (fabs(mat[i][j] - 0) < EPS)
-                    out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
-                else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
-                if (j != mat.cols() - 1)
-                    out << ' ';
-            }
-            out << "}";
-            if (i != mat.rows() - 1)
-                out << ',' << std::endl;
+//            out << "{";
+//            for (size_t j = 0; j < mat.cols(); j++) {
+//                if (fabs(mat[i][j] - 0) < EPS)
+//                    out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
+//                else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
+//                if (j != mat.cols() - 1)
+//                    out << ' ';
+//            }
+//            out << "}";
+//            if (i != mat.rows() - 1)
+//                out << ',' << std::endl;
+            out << mat[i];
         }
         out << std::endl << std::endl;
         return out;
@@ -106,8 +105,8 @@ public:
         return res;
     }
 
-    Matrix<T> operator+=(const Matrix<T>&);
-    Matrix<T> operator*=(const Matrix<T>&);
+    Matrix<T>& operator+=(const Matrix<T>&);
+    Matrix<T>& operator*=(const Matrix<T>&);
 
     friend bool operator==(const Matrix<T> &a, const Matrix<T> &b) {
         if (a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
@@ -186,7 +185,7 @@ public:
         return in;
     }
     
-    std::vector<T>& operator[](const size_t &i) {
+    std::vector<T> &operator[](const size_t &i) {
         return data.at(i);
     }
 
