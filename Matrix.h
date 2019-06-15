@@ -10,6 +10,28 @@
 #include <sstream>
 #include <type_traits>
 
+
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+// TODO: orthogonalization, determinants, eigenvalues, eigenvectors for now.
+
 const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
@@ -177,9 +199,11 @@ public:
     static Matrix<T> zeros(const size_t &rows, const size_t &cols);
     static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
     static Matrix<T> inverse(const Matrix<T> &);
-    static Matrix<T> randn(const size_t &, const size_t &);
+    static Matrix<T> randn(const size_t &r, const size_t &c);
     static Matrix<T> rand(const size_t &, const size_t &);
-    
+    static Matrix<T> randi(const size_t &, const size_t &, const int&, const int&);
+    static Matrix<T> randi(const size_t &, const size_t &, const int&);
+
     void gaussian_elimination(bool mode = false);
     size_t zero_rows();
     bool zero_row(const size_t &);
