@@ -1,17 +1,20 @@
 #ifndef MATRIX_MATRIX_H
 #define MATRIX_MATRIX_H
 
-#include <iostream>
+#include<iostream>
 #include <vector>
 #include <iomanip>
 #include <math.h>
 #include <limits>
 #include <algorithm>
 #include <sstream>
+#include <type_traits>
 
 const double EPS = std::numeric_limits<double>::epsilon();
 
 template<typename T> class Matrix {
+    static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
+                  "result_type must be a floating point or integral type");
     std::vector<std::vector<T>> data;
     void print_solutions(const std::vector<size_t> &);
 public:
@@ -33,13 +36,8 @@ public:
     void add_row(const std::vector<T> &);
     void add_col(const std::vector<T> &);
 
-
     void tuck_rows(const Matrix<T> &);
     void tuck_cols(const Matrix<T> &);
-
-    void tuck_rows(const std::vector<std::vector<T>> &);
-    void tuck_cols(const std::vector<std::vector<T>> &);
-
 
     void exchange_rows(const size_t &, const size_t &);
     void exchange_cols(const size_t &, const size_t &);
@@ -179,6 +177,8 @@ public:
     static Matrix<T> zeros(const size_t &rows, const size_t &cols);
     static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
     static Matrix<T> inverse(const Matrix<T> &);
+    static Matrix<T> randn(const size_t &, const size_t &);
+    static Matrix<T> rand(const size_t &, const size_t &);
     
     void gaussian_elimination(bool mode = false);
     size_t zero_rows();
@@ -191,3 +191,4 @@ public:
 };
 
 #endif // MATRIX_MATRIX_H
+#include "Matrix_impl.hpp"
