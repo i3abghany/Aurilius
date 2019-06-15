@@ -6,7 +6,6 @@
 #include <random>
 #include "Matrix.h"
 
-//#include "Matrix.h"
 
 template <typename T> Matrix<T>::Matrix(size_t ROWS, size_t COLS, T initial) {
     this->data.resize(ROWS);
@@ -291,24 +290,23 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator+=(const Matrix<T> &m) {
+Matrix<T>& Matrix<T>::operator+=(const Matrix<T> &m) {
     *this = (*this) + m;
     return (*this);
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::operator*=(const Matrix<T> &m) {
+Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &m) {
     *this = (*this) * m;
     return *this;
 }
 
-/*
- * LU decomposition.
+/* LU decomposition.
  * Returns the [L, U] decomposition for a matrix m
  * Multiplies by P^-1 in both sides of PA = LU if
  * the system needs a row exchange operation.
  * A = P^(-1)*LU
- * */
+ */
 template<typename T>
 std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
     Matrix<T> mat = m;
@@ -448,7 +446,7 @@ void Matrix<T>::tuck_cols(const Matrix<T> &m) {
  * whose values lies between 0 and 1.
  * Since it is uniformly distributed,
  * therefore the mean value is 0.5.
- * */
+ */
 template<typename T>
 Matrix<T> Matrix<T>::rand(const size_t &r, const size_t &c) {
     Matrix<T> result {r, c};
@@ -490,7 +488,9 @@ Matrix<T> Matrix<T>::randn(const size_t &r, const size_t &c) {
     return result;
 }
 
-
+/* Returns a matrix of size {r, c}, its elements are
+ * uniformly distributed pseudorandom.
+ */
 template<typename T>
 Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, const int &imax) {
     Matrix<T> result {r, c};
@@ -505,13 +505,77 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
     return result;
 }
 
+// Returns the dot product of two vectors a and b.
 template<typename T>
-Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imax) {
-    return randi(r, c, 1, imax);
+T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
+    if((a.cols() != 1 && a.rows() != 1) || (b.cols() != 1 && b.rows() != 1)) {
+        throw std::runtime_error("Dot product can only be done on vectors.");
+    }
+    T res = T{0};
+    Matrix<T> vecA = a, vecB = b;
+    if(a.rows() != 1) {
+        vecA = transpose(a);
+    }
+    if(b.rows() != 1) {
+        vecB = transpose(b);
+    }
+    for(size_t i = 0; i < vecA.cols(); i++) {
+        res += (vecA[0][i] * vecB[0][i]);
+    }
+    return res;
 }
 
+// Projects a vector a in the direction of another vector b.
+template<typename T>
+Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &a, const Matrix<T> &b) {
+    if((a.cols() != 1 && a.rows() != 1) || (b.cols() != 1 && b.rows() != 1)) {
+        throw std::runtime_error("Dot product can only be done on vectors.");
+    }
+    auto prod = Matrix<T>::dot_prod(a, b);
+    auto bTb  = Matrix<T>::dot_prod(b, b);
+    Matrix<T> vecA = a, vecB = b;
+    if(b.rows() != 1) {
+        vecB = transpose(b);
+    }
+    Matrix<T> result(1, b.cols());
+    for(size_t i = 0; i < a.size(); i++) {
+        result[0][i] = b[0][i] * (prod / bTb);
+    }
+    return result;
+}
 
-template<typename T> Matrix<T>::~Matrix() {
+// Projects a vector b to the column space of a matrix A.
+template<typename T>
+Matrix<T> Matrix<T>::project(const Matrix<T> &A, const std::vector<T> &b) {
+    auto P = inverse(transpose(A) * A);
+    P = A * P;
+    P = P * transpose(A);
+    Matrix<T> c = col_matrix(b);
+    auto res = P * c;
+    std::cout << res;
+    return res;
+}
+
+// Returns a matrix that consists of one column
+// made out of the elements of vector v.
+template<typename T>
+Matrix<T> Matrix<T>::col_matrix(const std::vector<T> &v) {
+    auto res = Matrix<T> {v.size(), 1};
+    for(int i = 0; i < v.size(); i++) {
+        res[i][0] = v[i];
+    }
+    return res;
+}
+
+// Returns a matrix that consists of one row
+// made out of the elements of vector v.
+template<typename T>
+Matrix<T> Matrix<T>::row_matrix(const std::vector<T> &v) {
+    return Matrix<T> {std::vector<std::vector<T>>(1, v)};
+}
+
+template<typename T>
+Matrix<T>::~Matrix() {
     this->data.clear();
 }
 
