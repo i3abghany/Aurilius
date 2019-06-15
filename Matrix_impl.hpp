@@ -197,7 +197,7 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
             free_col = !found_piv;
         }
     } // END OF ELIMINATION.
-    for(int i = 0; i < this->rows(); i++) {
+    for(size_t i = 0; i < this->rows(); i++) {
         for (int j = 0; j < this->cols(); j++) {
             if (fabs(this->data[i][j]) <= EPS) {
                 this->data[i][j] = T{0};
@@ -314,7 +314,6 @@ std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
     Matrix<T> mat = m;
     Matrix<T> L = inverse(mat.upper()), U = mat;
     return {L, U};
-
 }
 
 // Returns the upper-triangular copy matrix.
@@ -435,9 +434,9 @@ void Matrix<T>::tuck_rows(const Matrix<T> &m) {
 // Concatenate the param. matrix' columns.
 template<typename T>
 void Matrix<T>::tuck_cols(const Matrix<T> &m) {
-    for(int i = 0; i < m.cols(); i++) {
+    for(size_t i = 0; i < m.cols(); i++) {
         std::vector<T> col(m.rows());
-        for(int j = 0; j < m.rows(); j++) {
+        for(size_t j = 0; j < m.rows(); j++) {
             col[j] = (m[j][i]);
         }
         this->add_col(col);
@@ -460,8 +459,8 @@ Matrix<T> Matrix<T>::rand(const size_t &r, const size_t &c) {
     std::random_device                  rand_dev;
     std::mt19937                        generator(rand_dev());
     std::uniform_real_distribution<T>   distr(range_from, range_to);
-    for(int i = 0; i < r; i++) {
-        for(int j = 0; j < c; j++) {
+    for(size_t i = 0; i < r; i++) {
+        for(size_t j = 0; j < c; j++) {
             result[i][j] = distr(generator);
         }
     }
@@ -483,13 +482,34 @@ Matrix<T> Matrix<T>::randn(const size_t &r, const size_t &c) {
     const T mean      = T{0.0};
     const T variance  = T{1.0};
     std::normal_distribution<T> distr(mean, variance);
-    for(int i = 0; i < r; i++) {
-        for(int j = 0; j < c; j++) {
+    for(size_t i = 0; i < r; i++) {
+        for(size_t j = 0; j < c; j++) {
             result[i][j] = distr(generator);
         }
     }
     return result;
 }
+
+
+template<typename T>
+Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, const int &imax) {
+    Matrix<T> result {r, c};
+    std::random_device rand_dev;
+    std::mt19937_64 generator(rand_dev());
+    std::uniform_int_distribution<int> distr(imin, imax);
+    for(size_t i = 0; i < r; i++) {
+        for(size_t j = 0; j < c; j++) {
+            result[i][j] = static_cast<T>(distr(generator));
+        }
+    }
+    return result;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imax) {
+    return randi(r, c, 1, imax);
+}
+
 
 template<typename T> Matrix<T>::~Matrix() {
     this->data.clear();
