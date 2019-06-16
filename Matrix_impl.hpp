@@ -170,10 +170,13 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
                 T multiplier = (*this)[r][piv_idx/* row */];
                 for (size_t elem = 0; elem < this->cols(); elem++) {
                     (*this)[r][elem] -= multiplier * (*this)[row][elem];
+                    if(fabs((*this)[r][elem]) < EPS) {
+                        (*this)[r][elem] = T{0};
+                    }
                 }
-                if (!mode) {
-                    std::cout << *(this) << "\n\n\n";
-                }
+//                if (!mode) {
+//                    std::cout << *(this) << "\n\n\n";
+//                }
             }
         }
 
@@ -508,7 +511,7 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
 // Returns the dot product of two vectors a and b.
 template<typename T>
 T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
-    if((a.cols() != 1 && a.rows() != 1) || (b.cols() != 1 && b.rows() != 1)) {
+    if((!a.is_col() && !a.is_col()) || (!b.is_col() && b.is_rows())) {
         throw std::runtime_error("Dot product can only be done on vectors.");
     }
     T res = T{0};
@@ -527,7 +530,7 @@ T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
 
 // Projects a vector a in the direction of another vector b.
 template<typename T>
-Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &a, const Matrix<T> &b) {
+Matrix<T> Matrix<T>::project(const Matrix<T> &a, const Matrix<T> &b) {
     if((a.cols() != 1 && a.rows() != 1) || (b.cols() != 1 && b.rows() != 1)) {
         throw std::runtime_error("Dot product can only be done on vectors.");
     }
@@ -538,22 +541,32 @@ Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &a, const Matrix<T> 
         vecB = transpose(b);
     }
     Matrix<T> result(1, b.cols());
-    for(size_t i = 0; i < a.size(); i++) {
-        result[0][i] = b[0][i] * (prod / bTb);
+    for(size_t i = 0; i < vecB.cols(); i++) {
+        result[0][i] = vecB[0][i] * (prod / bTb);
     }
     return result;
 }
 
 // Projects a vector b to the column space of a matrix A.
 template<typename T>
-Matrix<T> Matrix<T>::project(const Matrix<T> &A, const std::vector<T> &b) {
+Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &A, const Matrix<T> &b) {
     auto P = inverse(transpose(A) * A);
     P = A * P;
     P = P * transpose(A);
-    Matrix<T> c = col_matrix(b);
-    auto res = P * c;
-    std::cout << res;
+    if(!b.is_col()) {
+        throw std::runtime_error("Projection of non column vector.");
+    }
+    auto res = P * b;
+//    std::cout << res;
     return res;
+}
+
+template <typename T> bool Matrix<T>::is_col() const {
+    return (this->cols() == 1);
+}
+
+template <typename T> bool Matrix<T>::is_row() const {
+    return (this->rows() == 1);
 }
 
 // Returns a matrix that consists of one column
