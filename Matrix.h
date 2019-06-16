@@ -10,7 +10,7 @@
 #include <sstream>
 #include <type_traits>
 
-const double EPS = std::numeric_limits<double>::epsilon();
+const double EPS = std::numeric_limits<double>::epsilon() * 100.0;
 
 template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<T> &p) {
@@ -56,11 +56,14 @@ public:
     void exchange_cols(const size_t &, const size_t &);
 
     static T dot_prod(const Matrix<T> &, const Matrix<T> &);
-    static Matrix<T> project(const Matrix<T> &, const std::vector<T> &);
+    static Matrix<T> project(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> project_into_col_space(const Matrix<T> &, const Matrix<T> &);
 
     static Matrix<T> col_matrix(const std::vector<T> &);
     static Matrix<T> row_matrix(const std::vector<T> &);
+
+    bool is_row() const;
+    bool is_col() const;
 
     void fill(const T&);
 
