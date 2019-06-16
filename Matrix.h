@@ -65,6 +65,10 @@ public:
     bool is_row() const;
     bool is_col() const;
 
+    Matrix<T> get_col(const size_t &);
+    void insert_col(const Matrix<T> &, const size_t &);
+    void remove_col(const size_t &);
+
     void fill(const T&);
 
     static Matrix<T> matmul(const Matrix<T> &, const Matrix<T> &);
@@ -75,18 +79,17 @@ public:
 
     friend std::ostream& operator<<(std::ostream &out, const Matrix<T> &mat) {
         for (size_t i = 0; i < mat.rows(); i++) {
-//            out << "{";
-//            for (size_t j = 0; j < mat.cols(); j++) {
-//                if (fabs(mat[i][j] - 0) < EPS)
-//                    out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
-//                else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
-//                if (j != mat.cols() - 1)
-//                    out << ' ';
-//            }
-//            out << "}";
-//            if (i != mat.rows() - 1)
-//                out << ',' << std::endl;
-            out << mat[i];
+            out << "{";
+            for (size_t j = 0; j < mat.cols(); j++) {
+                if (fabs(mat[i][j] - 0) < EPS)
+                    out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
+                else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
+                if (j != mat.cols() - 1)
+                    out << ' ';
+            }
+            out << "}";
+            if (i != mat.rows() - 1)
+                out << ',' << std::endl;
         }
         out << std::endl << std::endl;
         return out;
@@ -108,8 +111,9 @@ public:
         return res;
     }
 
-    Matrix<T>& operator+=(const Matrix<T>&);
-    Matrix<T>& operator*=(const Matrix<T>&);
+    Matrix<T> &operator+=(const Matrix<T> &);
+    Matrix<T> &operator*=(const Matrix<T> &);
+    Matrix<T> &operator-=(const Matrix<T> &);
 
     friend bool operator==(const Matrix<T> &a, const Matrix<T> &b) {
         if (a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
@@ -135,6 +139,16 @@ public:
         for (size_t i = 0; i < a.rows(); i++) {
             for (size_t j = 0; j < a.cols(); j++) {
                 tmp[i][j] = -1 * tmp[i][j];
+            }
+        }
+        return tmp;
+    }
+
+    friend Matrix<T> operator- (const Matrix<T> &a, const Matrix<T> &b) {
+        auto tmp = Matrix<T> {a};
+        for(int i = 0; i < a.rows(); i++) {
+            for(int j = 0; j < a.cols(); j++) {
+                tmp[i][j] -= b[i][j];
             }
         }
         return tmp;
@@ -207,6 +221,8 @@ public:
     static Matrix<T> randi(const size_t &, const size_t &, const int&);
 
     void gaussian_elimination(bool mode = false);
+    void orthogonalize();
+
     size_t zero_rows();
     bool zero_row(const size_t &);
     bool is_inconsistent();

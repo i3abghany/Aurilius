@@ -211,12 +211,12 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
     }
 }
 
+
 template<typename T>
 void Matrix<T>::print_solutions(const std::vector<size_t> &piv_idxs) {
     const size_t num_of_zero_rows = this->zero_rows();
     if (is_inconsistent()) {
-        std::cout << "the system is inconsistent." << std::endl;
-        return;
+        throw std::runtime_error("The system is inconsistent.");
     }
     std::vector<std::string> solutions;
     std::cout << std::endl;
@@ -301,6 +301,12 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T> &m) {
 template<typename T>
 Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &m) {
     *this = (*this) * m;
+    return *this;
+}
+
+template<typename T>
+Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &m) {
+    *this = (*this) - m;
     return *this;
 }
 
@@ -444,6 +450,31 @@ void Matrix<T>::tuck_cols(const Matrix<T> &m) {
     }
 }
 
+
+template<typename T>
+Matrix<T> Matrix<T>::get_col(const size_t &col) {
+    Matrix<T> res{this->rows(), 1};
+    for(size_t row = 0; row < this->rows(); row++) {
+        res[row][0] = this->data[row][col];
+    }
+    return res;
+}
+
+template<typename T>
+void Matrix<T>::insert_col(const Matrix<T> &c, const size_t &idx) {
+    for(size_t i = 0; i < this->rows(); i++) {
+        this->data[i].insert(std::begin(this->data[i]) + idx, c[i][0]);
+    }
+}
+
+template<typename T>
+void Matrix<T>::remove_col(const size_t &r) {
+    for(size_t i = 0; i < this->rows(); i++) {
+        this->data[i].erase(std::begin(this->data[i]) + r);
+    }
+}
+
+
 /* returns a matrix of size {r, c} with elements
  * uniformly distributed random numbers
  * whose values lies between 0 and 1.
@@ -511,7 +542,7 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
 // Returns the dot product of two vectors a and b.
 template<typename T>
 T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
-    if((!a.is_col() && !a.is_col()) || (!b.is_col() && b.is_rows())) {
+    if((!a.is_col() && !a.is_col()) || (!b.is_col() && b.is_row())) {
         throw std::runtime_error("Dot product can only be done on vectors.");
     }
     T res = T{0};
@@ -540,11 +571,11 @@ Matrix<T> Matrix<T>::project(const Matrix<T> &a, const Matrix<T> &b) {
     if(b.rows() != 1) {
         vecB = transpose(b);
     }
-    Matrix<T> result(1, b.cols());
+    Matrix<T> result(1, vecB.cols());
     for(size_t i = 0; i < vecB.cols(); i++) {
         result[0][i] = vecB[0][i] * (prod / bTb);
     }
-    return result;
+    return transpose(result);
 }
 
 // Projects a vector b to the column space of a matrix A.
@@ -574,7 +605,7 @@ template <typename T> bool Matrix<T>::is_row() const {
 template<typename T>
 Matrix<T> Matrix<T>::col_matrix(const std::vector<T> &v) {
     auto res = Matrix<T> {v.size(), 1};
-    for(int i = 0; i < v.size(); i++) {
+    for(size_t i = 0; i < v.size(); i++) {
         res[i][0] = v[i];
     }
     return res;
@@ -588,8 +619,21 @@ Matrix<T> Matrix<T>::row_matrix(const std::vector<T> &v) {
 }
 
 template<typename T>
+void Matrix<T>::orthogonalize() {
+    for(size_t j = 1; j < this->cols(); j++) {
+        auto col = this->get_col(j);
+        this->remove_col(j);
+        for(size_t prev_col = 0; prev_col < j; prev_col++) {
+            col -= project(col, get_col(prev_col));
+        }
+        this->insert_col(col, j);
+    }
+}
+
+template<typename T>
 Matrix<T>::~Matrix() {
     this->data.clear();
 }
+
 
 #endif //MATRIX_MATRIX_IMPL_HPP
