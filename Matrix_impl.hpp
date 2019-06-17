@@ -174,9 +174,9 @@ template <typename T> void Matrix<T>::gaussian_elimination(bool mode) {
                         (*this)[r][elem] = T{0};
                     }
                 }
-//                if (!mode) {
-//                    std::cout << *(this) << "\n\n\n";
-//                }
+                if (!mode) {
+                    std::cout << *(this) << "\n\n\n";
+                }
             }
         }
 
@@ -242,7 +242,8 @@ void Matrix<T>::print_solutions(const std::vector<size_t> &piv_idxs) {
         std::cout << s << std::endl;
 }
 
-template <typename T> Matrix<T> Matrix<T>::upper() {
+template <typename T> std::pair<Matrix<T>, size_t> Matrix<T>::upper() {
+    size_t no_of_exchanges { 0 };
     Matrix<T> L{eye(this->rows())};
     Matrix<T> tmp_L{eye(this->rows())};
     bool free_col = false;
@@ -260,7 +261,7 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
         }
         if (pivot != 0) {
             for (size_t successor_row = row + 1; successor_row < this->rows(); successor_row++) {
-                T multiplier = (*this)[successor_row][/*row*/piv_idx] / pivot;
+                T multiplier = (*this)[successor_row][piv_idx] / pivot;
 
                 for (size_t elem = 0; elem < this->cols(); elem++) {
                     (*this)[successor_row][elem] -= multiplier * (*this)[row][elem];
@@ -278,6 +279,7 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
                     found_piv = true;
                     exchange_rows(successor_row, row);
                     L = inverse(permutation_matrix(this->rows(), successor_row, row)) * L;
+                    no_of_exchanges++;
                     break;
                 }
             }
@@ -289,7 +291,7 @@ template <typename T> Matrix<T> Matrix<T>::upper() {
             free_col = !found_piv;
         }
     }
-    return L;
+    return { L, no_of_exchanges };
 }
 
 template<typename T>
@@ -319,7 +321,7 @@ Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &m) {
 template<typename T>
 std::pair<Matrix<T>, Matrix<T>> Matrix<T>::LU(const Matrix &m) {
     Matrix<T> mat = m;
-    Matrix<T> L = inverse(mat.upper()), U = mat;
+    Matrix<T> L = inverse(mat.upper().first), U = mat;
     return {L, U};
 }
 
@@ -542,15 +544,16 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
 // Returns the dot product of two vectors a and b.
 template<typename T>
 T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
-    if((!a.is_col() && !a.is_col()) || (!b.is_col() && b.is_row())) {
+    if((!a.is_col() && !a.is_row()) || (!b.is_col() && !b.is_row())) {
+        std::cout << a.rows() << ' ' << a.cols() << ' ' << b.rows() << ' ' << b.cols();
         throw std::runtime_error("Dot product can only be done on vectors.");
     }
     T res = T{0};
     Matrix<T> vecA = a, vecB = b;
-    if(a.rows() != 1) {
+    if(!a.is_row()) {
         vecA = transpose(a);
     }
-    if(b.rows() != 1) {
+    if(!b.is_row()) {
         vecB = transpose(b);
     }
     for(size_t i = 0; i < vecA.cols(); i++) {
@@ -565,12 +568,17 @@ Matrix<T> Matrix<T>::project(const Matrix<T> &a, const Matrix<T> &b) {
     if((a.cols() != 1 && a.rows() != 1) || (b.cols() != 1 && b.rows() != 1)) {
         throw std::runtime_error("Dot product can only be done on vectors.");
     }
-    auto prod = Matrix<T>::dot_prod(a, b);
-    auto bTb  = Matrix<T>::dot_prod(b, b);
+
     Matrix<T> vecA = a, vecB = b;
     if(b.rows() != 1) {
         vecB = transpose(b);
     }
+    if(a.rows() != 1) {
+        vecA = transpose(a);
+    }
+    auto prod = Matrix<T>::dot_prod(vecA, vecB);
+    auto bTb  = Matrix<T>::dot_prod(vecB, vecB);
+
     Matrix<T> result(1, vecB.cols());
     for(size_t i = 0; i < vecB.cols(); i++) {
         result[0][i] = vecB[0][i] * (prod / bTb);
@@ -619,6 +627,14 @@ Matrix<T> Matrix<T>::row_matrix(const std::vector<T> &v) {
 }
 
 template<typename T>
+void Matrix<T>::normalize_col(const size_t &c) {
+    T mag = std::sqrt(dot_prod(get_col(c), get_col(c)));
+    for(int i = 0; i < this->rows(); i++) {
+        this->data[i][c] /= mag;
+    }
+}
+
+template<typename T>
 void Matrix<T>::orthogonalize() {
     for(size_t j = 1; j < this->cols(); j++) {
         auto col = this->get_col(j);
@@ -630,10 +646,32 @@ void Matrix<T>::orthogonalize() {
     }
 }
 
+
+template<typename T>
+void Matrix<T>::orthonormalize() {
+    this->orthogonalize();
+    for(int j = 0; j < this->cols(); j++) {
+        this->normalize_col(j);
+    }
+}
+
 template<typename T>
 Matrix<T>::~Matrix() {
     this->data.clear();
 }
 
+template<typename T>
+T Matrix<T>::det(Matrix<T> m) {
+    if(m.cols() != m.rows()) {
+        throw std::runtime_error("Determinants is only for square matrices.");
+    }
+    auto p = m.upper();
+    size_t no_of_exchanges = p.second;
+    T res = 1;
+    for(int i = 0; i < m.rows(); i++) {
+        res *= m[i][i];
+    }
+    return res * ((no_of_exchanges % 2 != 0) ? -1 : 1);
+}
 
 #endif //MATRIX_MATRIX_IMPL_HPP
