@@ -560,6 +560,14 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
     return result;
 }
 
+/* Returns a matrix of size {N, N}, its elements are
+ * uniformly distributed pseudorandom.
+ */
+template<typename T>
+Matrix<T> Matrix<T>::randi(const size_t &N, const size_t &imin, const int &imax) {
+    return randi(N, N, imin, imax);
+}
+
 // Returns the dot product of two vectors a and b.
 template<typename T>
 T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
@@ -700,5 +708,6 @@ template<typename T>
 Matrix<T>::~Matrix() {
     this->data.clear();
 }
+
 
 #endif //MATRIX_MATRIX_IMPL_HPP

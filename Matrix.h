@@ -176,6 +176,9 @@ public:
     }
 
     friend Matrix<T> operator-(const Matrix<T> &a, const Matrix<T> &b) {
+        if(a.size() != b.size()) {
+            throw std::runtime_error("Matrices are not of the same size.");
+        }
         auto tmp = Matrix<T>{a};
         for (int i = 0; i < a.rows(); i++) {
             for (int j = 0; j < a.cols(); j++) {
@@ -197,7 +200,6 @@ public:
     friend Matrix<T> operator*(const T &b, Matrix<T> mat) {
         return mat * b;
     }
-
 
     std::vector<T> &operator[](const size_t &i) {
         return data.at(i);
