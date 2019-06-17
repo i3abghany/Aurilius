@@ -212,7 +212,7 @@ void Matrix<T>::gaussian_elimination(bool mode) {
                 finish &= (zero_row(fr));
             }
             free_col = !found_piv;
-            if(!finish && !found_piv) break;
+            if((finish || is_inconsistent()) && !found_piv) break;
             row--;
         }
     } // END OF ELIMINATION.
@@ -306,7 +306,7 @@ std::pair<Matrix<T>, size_t> Matrix<T>::upper() {
                 finish &= zero_row(fr);
             }
             free_col = !found_piv;
-            if (!finish && !found_piv) break;
+            if ((finish || is_inconsistent()) && !found_piv) break;
             row--;
         }
     }
@@ -691,6 +691,7 @@ T Matrix<T>::det(Matrix<T> m) {
     for (int i = 0; i < m.rows(); i++) {
         res *= m[i][i];
     }
+    std::cout << m;
     if(std::fabs(res) <= EPS) return 0;
     return res * ((no_of_exchanges % 2 != 0) ? -1 : 1);
 }
