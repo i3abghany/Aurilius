@@ -10,7 +10,7 @@
 #include <sstream>
 #include <type_traits>
 
-const double EPS = std::numeric_limits<double>::epsilon() * 100.0;
+const double EPS = std::numeric_limits<double>::epsilon() * 1e6;
 
 template <typename T>
 std::ostream &operator<<(std::ostream &out, const std::vector<T> &p) {
@@ -28,6 +28,7 @@ template<typename T> class Matrix {
     static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
                   "result_type must be a floating point or integral type");
     std::vector<std::vector<T>> data;
+    std::pair<Matrix<T>, size_t> upper();
     void print_solutions(const std::vector<size_t> &);
 public:
     Matrix() = default;
@@ -56,6 +57,7 @@ public:
     void exchange_cols(const size_t &, const size_t &);
 
     static T dot_prod(const Matrix<T> &, const Matrix<T> &);
+    void normalize_col(const size_t &);
     static Matrix<T> project(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> project_into_col_space(const Matrix<T> &, const Matrix<T> &);
 
@@ -81,15 +83,18 @@ public:
         for (size_t i = 0; i < mat.rows(); i++) {
             out << "{";
             for (size_t j = 0; j < mat.cols(); j++) {
-                if (fabs(mat[i][j] - 0) < EPS)
+                if (fabs(mat[i][j] - 0) < EPS) {
                     out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
+                }
                 else out << std::fixed << std::setprecision(3) << std::setw(6) << mat[i][j];
-                if (j != mat.cols() - 1)
+                if (j != mat.cols() - 1) {
                     out << ' ';
+                }
             }
             out << "}";
-            if (i != mat.rows() - 1)
+            if (i != mat.rows() - 1) {
                 out << ',' << std::endl;
+            }
         }
         out << std::endl << std::endl;
         return out;
@@ -221,13 +226,15 @@ public:
     static Matrix<T> randi(const size_t &, const size_t &, const int&);
 
     void gaussian_elimination(bool mode = false);
+
     void orthogonalize();
+    void orthonormalize();
+
+    static T det(Matrix<T>);
 
     size_t zero_rows();
     bool zero_row(const size_t &);
     bool is_inconsistent();
-    
-    Matrix<T> upper();
 
     ~Matrix();
 };
