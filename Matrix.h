@@ -35,7 +35,7 @@ public:
 
     size_t cols() const { return this->data[0].size(); }
     size_t rows() const { return this->data.size(); }
-    std::pair<size_t, size_t> size() { return {cols(), rows()}; }
+    std::pair<size_t, size_t> size() const { return {cols(), rows()}; }
 
     void add_row(const std::vector<T> &);
     void add_col(const std::vector<T> &);
@@ -67,7 +67,7 @@ public:
     static Matrix<T> matmul(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> transpose(const Matrix<T> &);
     static Matrix<T> upper(Matrix<T>);
-    static std::pair<Matrix<T>, Matrix<T>> LU(const Matrix &);
+    static std::pair<Matrix<T>, Matrix<T>> LU(const Matrix<T> &);
     static bool is_symmetric(const Matrix &);
     static T det(Matrix<T>);
 
@@ -224,6 +224,7 @@ public:
 
     void orthogonalize();
     void orthonormalize();
+    static std::pair<Matrix<T>, Matrix<T>> QR(const Matrix<T> &);
 
     size_t zero_rows();
     bool zero_row(const size_t &);
