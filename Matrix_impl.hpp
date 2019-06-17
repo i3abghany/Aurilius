@@ -687,6 +687,22 @@ void Matrix<T>::orthonormalize() {
     }
 }
 
+// Returns the QR factorization of the given Matrix.
+template <typename T> std::pair<Matrix<T>, Matrix<T>> Matrix<T>::QR(const Matrix<T> &m) {
+    auto Q = m;
+    // calculating Q.
+    Q.orthonormalize();
+    /*
+     * A = QR
+     * Q`A = Q`QR
+     * (Q`Q) = I
+     * R = Q`A
+     * */
+    auto R = Matrix<T>::transpose(Q) * m;
+    return {Q, R};
+
+}
+
 // Calculates and returns the determinant of a given matrix.
 template<typename T>
 T Matrix<T>::det(Matrix<T> m) {
@@ -708,6 +724,5 @@ template<typename T>
 Matrix<T>::~Matrix() {
     this->data.clear();
 }
-
 
 #endif //MATRIX_MATRIX_IMPL_HPP
