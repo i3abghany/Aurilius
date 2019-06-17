@@ -147,11 +147,15 @@ template<typename T>
 bool Matrix<T>::is_inconsistent() {
     const size_t free_rows = this->zero_rows();
     const size_t last_row = this->rows() - free_rows - 1;
-    bool is_all_zero_but_last = true;
-    for (size_t elem = 0; elem < this->cols() - 1; elem++) {
-        is_all_zero_but_last &= ((*this)[last_row][elem] == 0);
+    for(size_t row = last_row; row < this->rows(); row++) {
+        bool is_all_zero_but_last = true;
+        for (size_t elem = 0; elem < this->cols() - 1; elem++) {
+            is_all_zero_but_last &= ((*this)[row][elem] == 0);
+        }
+        is_all_zero_but_last &= ((*this)[row][this->cols() - 1] != 0);
+        if(is_all_zero_but_last) return true;
     }
-    return is_all_zero_but_last && ((*this)[last_row][this->cols() - 1] != 0);
+    return false;
 }
 
 template<typename T>
@@ -205,10 +209,11 @@ void Matrix<T>::gaussian_elimination(bool mode) {
 
             bool finish = true;
             for (size_t fr = row; fr < this->rows(); fr++) {
-                finish &= zero_row(fr);
+                finish &= (zero_row(fr));
             }
-            if (!finish) row--;
             free_col = !found_piv;
+            if(!finish && !found_piv) break;
+            row--;
         }
     } // END OF ELIMINATION.
     for (size_t i = 0; i < this->rows(); i++) {
@@ -300,8 +305,9 @@ std::pair<Matrix<T>, size_t> Matrix<T>::upper() {
             for (size_t fr = row; fr < this->rows(); fr++) {
                 finish &= zero_row(fr);
             }
-            if (!finish) row--;
             free_col = !found_piv;
+            if (!finish && !found_piv) break;
+            row--;
         }
     }
     return {L, no_of_exchanges};
@@ -609,7 +615,6 @@ Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &A, const Matrix<T> 
         throw std::runtime_error("Projection of non column vector.");
     }
     auto res = P * b;
-//    std::cout << res;
     return res;
 }
 
