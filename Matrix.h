@@ -43,11 +43,11 @@ public:
     void tuck_rows(const Matrix<T> &);
     void tuck_cols(const Matrix<T> &);
 
-    void exchange_rows(const size_t &, const size_t &);
-    void exchange_cols(const size_t &, const size_t &);
+    void exchange_rows(const size_t, const size_t);
+    void exchange_cols(const size_t, const size_t);
 
     static T dot_prod(const Matrix<T> &, const Matrix<T> &);
-    void normalize_col(const size_t &);
+    void normalize_col(const size_t);
 
     static Matrix<T> project(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> project_into_col_space(const Matrix<T> &, const Matrix<T> &);
@@ -58,9 +58,9 @@ public:
     bool is_row() const;
     bool is_col() const;
 
-    Matrix<T> get_col(const size_t &);
-    void insert_col(const Matrix<T> &, const size_t &);
-    void remove_col(const size_t &);
+    Matrix<T> get_col(const size_t);
+    void insert_col(const Matrix<T> &, const size_t);
+    void remove_col(const size_t);
 
     void fill(const T &);
 
@@ -201,23 +201,23 @@ public:
         return mat * b;
     }
 
-    std::vector<T> &operator[](const size_t &i) {
+    std::vector<T> &operator[](const size_t i) {
         return data.at(i);
     }
 
-    std::vector<T> operator[](const size_t &i) const {
+    std::vector<T> operator[](const size_t i) const {
         return data.at(i);
     }
 
-    static Matrix<T> eye(const size_t &N);
-    static Matrix<T> pascal(const size_t &N);
-    static Matrix<T> zeros(const size_t &rows, const size_t &cols);
-    static Matrix<T> permutation_matrix(const size_t &size, const size_t &, const size_t &);
+    static Matrix<T> eye(const size_t N);
+    static Matrix<T> pascal(const size_t N);
+    static Matrix<T> zeros(const size_t rows, const size_t cols);
+    static Matrix<T> permutation_matrix(const size_t size, const size_t, const size_t);
 
-    static Matrix<T> randn(const size_t &r, const size_t &c);
-    static Matrix<T> rand(const size_t &, const size_t &);
-    static Matrix<T> randi(const size_t &, const size_t &, const int &, const int &);
-    static Matrix<T> randi(const size_t &, const size_t &, const int &);
+    static Matrix<T> randn(const size_t, const size_t);
+    static Matrix<T> rand (const size_t, const size_t);
+    static Matrix<T> randi(const size_t, const size_t, const int &, const int &);
+    static Matrix<T> randi(const size_t, const size_t, const int &);
 
     void gaussian_elimination(bool mode = false);
     static Matrix<T> inverse(const Matrix<T> &);
@@ -227,7 +227,7 @@ public:
     static std::pair<Matrix<T>, Matrix<T>> QR(const Matrix<T> &);
 
     size_t zero_rows();
-    bool zero_row(const size_t &);
+    bool zero_row(const size_t);
     bool is_inconsistent();
 
     ~Matrix();

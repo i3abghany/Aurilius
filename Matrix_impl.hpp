@@ -63,7 +63,7 @@ Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
 }
 
 template<typename T>
-void Matrix<T>::exchange_cols(const size_t &c1, const size_t &c2) {
+void Matrix<T>::exchange_cols(const size_t c1, const size_t c2) {
     for (size_t i = 0; i < this->rows(); i++) {
         std::swap(this->data[i][c1], this->data[i][c2]);
     }
@@ -71,7 +71,7 @@ void Matrix<T>::exchange_cols(const size_t &c1, const size_t &c2) {
 
 // eexchanges rows r1 and r2.
 template<typename T>
-void Matrix<T>::exchange_rows(const size_t &r1, const size_t &r2) {
+void Matrix<T>::exchange_rows(const size_t r1, const size_t r2) {
     std::swap(this->data[r1], this->data[r2]);
 }
 
@@ -106,7 +106,7 @@ Matrix<T> Matrix<T>::transpose(const Matrix<T> &mat) {
 
 // returns an identity matrix of size NxN
 template<typename T>
-Matrix<T> Matrix<T>::eye(const size_t &N) {
+Matrix<T> Matrix<T>::eye(const size_t N) {
     Matrix<T> result = {N, N};
     for (size_t i = 0; i < N; i++) {
         result[i][i] = 1;
@@ -115,7 +115,7 @@ Matrix<T> Matrix<T>::eye(const size_t &N) {
 }
 
 template<typename T>
-Matrix<T> Matrix<T>::pascal(const size_t &N) {
+Matrix<T> Matrix<T>::pascal(const size_t N) {
     Matrix<T> result{N, N, T{0}};
     std::vector<T> &first_row = *std::begin(result.data);
     for (size_t i = 0; i < N; i++) {
@@ -369,7 +369,7 @@ bool Matrix<T>::is_symmetric(const Matrix &m) {
 
 // Returns a permutation matrix that exchanges first_row and second_row.
 template<typename T>
-Matrix<T> Matrix<T>::permutation_matrix(const size_t &size, const size_t &first_row, const size_t &second_row) {
+Matrix<T> Matrix<T>::permutation_matrix(const size_t size, const size_t first_row, const size_t second_row) {
     auto P = Matrix<T>::eye(size);
     P.exchange_rows(first_row, second_row);
     return P;
@@ -405,7 +405,7 @@ Matrix<T> Matrix<T>::inverse(const Matrix<T> &A) {
 
 // Returns whether the row is all zeroes or not.
 template<typename T>
-bool Matrix<T>::zero_row(const size_t &i) {
+bool Matrix<T>::zero_row(const size_t i) {
     bool is_free_row = true;
     for (size_t j = 0; j < this->cols(); j++) {
         is_free_row &= ((*this)[i][j] == 0);
@@ -444,7 +444,7 @@ void Matrix<T>::add_col(const std::vector<T> &c) {
 
 // Returns a matrix of size {r, c} with zero elements.
 template<typename T>
-Matrix<T> Matrix<T>::zeros(const size_t &r, const size_t &c) {
+Matrix<T> Matrix<T>::zeros(const size_t r, const size_t c) {
     return Matrix<T>{r, c, T{0}};
 }
 
@@ -473,7 +473,7 @@ void Matrix<T>::tuck_cols(const Matrix<T> &m) {
 
 
 template<typename T>
-Matrix<T> Matrix<T>::get_col(const size_t &col) {
+Matrix<T> Matrix<T>::get_col(const size_t col) {
     Matrix<T> res{this->rows(), 1};
     for (size_t row = 0; row < this->rows(); row++) {
         res[row][0] = this->data[row][col];
@@ -482,14 +482,14 @@ Matrix<T> Matrix<T>::get_col(const size_t &col) {
 }
 
 template<typename T>
-void Matrix<T>::insert_col(const Matrix<T> &c, const size_t &idx) {
+void Matrix<T>::insert_col(const Matrix<T> &c, const size_t idx) {
     for (size_t i = 0; i < this->rows(); i++) {
         this->data[i].insert(std::begin(this->data[i]) + idx, c[i][0]);
     }
 }
 
 template<typename T>
-void Matrix<T>::remove_col(const size_t &r) {
+void Matrix<T>::remove_col(const size_t r) {
     for (size_t i = 0; i < this->rows(); i++) {
         this->data[i].erase(std::begin(this->data[i]) + r);
     }
@@ -503,7 +503,7 @@ void Matrix<T>::remove_col(const size_t &r) {
  * therefore the mean value is 0.5.
  */
 template<typename T>
-Matrix<T> Matrix<T>::rand(const size_t &r, const size_t &c) {
+Matrix<T> Matrix<T>::rand(const size_t r, const size_t c) {
     Matrix<T> result{r, c};
     static_assert(std::is_floating_point<T>::value,
                   "template must be a floating point type");
@@ -526,7 +526,7 @@ Matrix<T> Matrix<T>::rand(const size_t &r, const size_t &c) {
  * having 0 mean and 1 variance.
  */
 template<typename T>
-Matrix<T> Matrix<T>::randn(const size_t &r, const size_t &c) {
+Matrix<T> Matrix<T>::randn(const size_t r, const size_t c) {
     static_assert(std::is_floating_point<T>::value,
                   "template must be a floating point type");
     Matrix<T> result{r, c};
@@ -547,7 +547,7 @@ Matrix<T> Matrix<T>::randn(const size_t &r, const size_t &c) {
  * uniformly distributed pseudorandom.
  */
 template<typename T>
-Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, const int &imax) {
+Matrix<T> Matrix<T>::randi(const size_t r, const size_t c, const int &imin, const int &imax) {
     Matrix<T> result{r, c};
     std::random_device rand_dev;
     std::mt19937_64 generator(rand_dev());
@@ -564,7 +564,7 @@ Matrix<T> Matrix<T>::randi(const size_t &r, const size_t &c, const int &imin, co
  * uniformly distributed pseudorandom.
  */
 template<typename T>
-Matrix<T> Matrix<T>::randi(const size_t &N, const size_t &imin, const int &imax) {
+Matrix<T> Matrix<T>::randi(const size_t N, const size_t imin, const int &imax) {
     return randi(N, N, imin, imax);
 }
 
@@ -578,10 +578,10 @@ T Matrix<T>::dot_prod(const Matrix<T> &a, const Matrix<T> &b) {
     T res = T{0};
     Matrix<T> vecA = a, vecB = b;
     if (!a.is_row()) {
-        vecA = transpose(a);
+        vecA = Matrix<T>::transpose(a);
     }
     if (!b.is_row()) {
-        vecB = transpose(b);
+        vecB = Matrix<T>::transpose(b);
     }
     for (size_t i = 0; i < vecA.cols(); i++) {
         res += (vecA[0][i] * vecB[0][i]);
@@ -598,10 +598,10 @@ Matrix<T> Matrix<T>::project(const Matrix<T> &a, const Matrix<T> &b) {
 
     Matrix<T> vecA = a, vecB = b;
     if (b.rows() != 1) {
-        vecB = transpose(b);
+        vecB = Matrix<T>::transpose(b);
     }
     if (a.rows() != 1) {
-        vecA = transpose(a);
+        vecA = Matrix<T>::transpose(a);
     }
     auto prod = Matrix<T>::dot_prod(vecA, vecB);
     auto bTb = Matrix<T>::dot_prod(vecB, vecB);
@@ -610,15 +610,15 @@ Matrix<T> Matrix<T>::project(const Matrix<T> &a, const Matrix<T> &b) {
     for (size_t i = 0; i < vecB.cols(); i++) {
         result[0][i] = vecB[0][i] * (prod / bTb);
     }
-    return transpose(result);
+    return Matrix<T>::transpose(result);
 }
 
 // Projects a vector b to the column space of a matrix A.
 template<typename T>
 Matrix<T> Matrix<T>::project_into_col_space(const Matrix<T> &A, const Matrix<T> &b) {
-    auto P = inverse(transpose(A) * A);
+    auto P = inverse(Matrix<T>::transpose(A) * A);
     P = A * P;
-    P = P * transpose(A);
+    P = P * Matrix<T>::transpose(A);
     if (!b.is_col()) {
         throw std::runtime_error("Projection of non column vector.");
     }
@@ -658,7 +658,7 @@ Matrix<T> Matrix<T>::row_matrix(const std::vector<T> &v) {
 // Normalizes a column vector of the matrix,
 // basically divides its components by its length.
 template<typename T>
-void Matrix<T>::normalize_col(const size_t &c) {
+void Matrix<T>::normalize_col(const size_t c) {
     T mag = std::sqrt(dot_prod(get_col(c), get_col(c)));
     for (int i = 0; i < this->rows(); i++) {
         this->data[i][c] /= mag;
