@@ -6,6 +6,11 @@ Matrix<double> mat {
   {4, 5, 6},
   {7, 8, 9}
 };
+
+// Random initialization.
+auto rand_mat = Matrix<double>::randi(3, 3, 0, 10);
+auto rand_2   = Matrix<double>::rand(3, 3);
+auto rand_3   = Matrix<double>::randn(3, 3);
 ```
   ### Special Matrices:
   ```c++
@@ -13,6 +18,8 @@ Matrix<double> mat {
     auto pascal   = Matrix<double>::pascal(5); // generates pascal matrix of size(5, 5)
     auto perm_mat = Matrix<double>::permutation_matrix(5, 2, 3); // generates a permutation matrix of sisze(5, 5)
                                                                  // and exchanges rows 2 and 3.
+    auto zeroes_mat = Matrix<double>::zeros(3, 4);
+
   ```
   ### Operations:
   ```c++
@@ -46,4 +53,12 @@ Matrix<double> mat {
   ```c++
   // Will print out the solutions if the system is solvable, will throw if it's inconsistent.
   mat.gaussian_elimination();
+ ```
+
+ ### Solving Systems using inverse.
+ ``` c++
+ auto inv = Matrix<double>::inverse(mat);
+ auto b   = Matrix<double>::col_vector({2, 4, 1});
+ auto sol = inv * b;
+ std::cout << sol;
  ```

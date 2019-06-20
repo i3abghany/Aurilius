@@ -52,8 +52,8 @@ public:
     static Matrix<T> project(const Matrix<T> &, const Matrix<T> &);
     static Matrix<T> project_into_col_space(const Matrix<T> &, const Matrix<T> &);
 
-    static Matrix<T> col_matrix(const std::vector<T> &);
-    static Matrix<T> row_matrix(const std::vector<T> &);
+    static Matrix<T> col_vector(const std::vector<T> &);
+    static Matrix<T> row_vector(const std::vector<T> &);
 
     bool is_row() const;
     bool is_col() const;
