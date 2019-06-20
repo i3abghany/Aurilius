@@ -639,7 +639,7 @@ bool Matrix<T>::is_row() const {
 // Returns a matrix that consists of one column
 // made out of the elements of vector v.
 template<typename T>
-Matrix<T> Matrix<T>::col_matrix(const std::vector<T> &v) {
+Matrix<T> Matrix<T>::col_vector(const std::vector<T> &v) {
     auto res = Matrix<T>{v.size(), 1};
     for (size_t i = 0; i < v.size(); i++) {
         res[i][0] = v[i];
@@ -650,7 +650,7 @@ Matrix<T> Matrix<T>::col_matrix(const std::vector<T> &v) {
 // Returns a matrix that consists of one row
 // made out of the elements of vector v.
 template<typename T>
-Matrix<T> Matrix<T>::row_matrix(const std::vector<T> &v) {
+Matrix<T> Matrix<T>::row_vector(const std::vector<T> &v) {
     return Matrix<T>{std::vector<std::vector<T>>(1, v)};
 }
 
