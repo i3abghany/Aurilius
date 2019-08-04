@@ -1,0 +1,17 @@
+﻿  main.cpp
+C:\Users\pi\source\repos\Matrix-Library\Matrix-Library\Matrix_impl.hpp(714): warning C4018: '<': signed/unsigned mismatch
+  C:\Users\pi\source\repos\Matrix-Library\Matrix-Library\Matrix_impl.hpp(707): note: while compiling class template member function 'T Matrix<T>::det(Matrix<T>)'
+          with
+          [
+              T=double
+          ]
+  C:\Users\pi\source\repos\Matrix-Library\Matrix-Library\main.cpp(35): note: see reference to function template instantiation 'T Matrix<T>::det(Matrix<T>)' being compiled
+          with
+          [
+              T=double
+          ]
+  C:\Users\pi\source\repos\Matrix-Library\Matrix-Library\Matrix_impl.hpp(765): note: see reference to class template instantiation 'Matrix<double>' being compiled
+  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.20.27508\include\chrono(595): note: see reference to class template instantiation 'std::chrono::duration<double,std::ratio<1,1>>' being compiled
+  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.20.27508\include\chrono(172): note: see reference to class template instantiation 'std::chrono::duration<__int64,std::nano>' being compiled
+  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.20.27508\include\chrono(574): note: see reference to class template instantiation 'std::chrono::time_point<std::chrono::steady_clock,std::chrono::steady_clock::duration>' being compiled
+  Matrix-Library.vcxproj -> C:\Users\pi\source\repos\Matrix-Library\Debug\Matrix-Library.exe
