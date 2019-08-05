@@ -718,14 +718,14 @@ T Matrix<T>::elem_det(Matrix<T> m) {
 
 // Minimum number of swaps to sort the vector.
 template<typename T>
-std::size_t Matrix<T>::num_of_perms(const std::vector<std::size_t>& arr) {
+std::size_t Matrix<T>::num_of_perms(const std::vector<std::size_t> & arr) {
 	std::size_t const N = arr.size();
 	std::vector<std::pair<int, int>> arr_pos(N);
 	for (std::size_t i = 0; i < N; i++) {
 		arr_pos[i].first = arr[i];
 		arr_pos[i].second = i;
 	}
-	sort(arr_pos.begin(), arr_pos.end());
+	sort(std::begin(arr_pos), std::end(arr_pos));
 	std::vector<bool> vis(N, false);
 	std::size_t ans = 0;
 
@@ -762,12 +762,12 @@ T Matrix<T>::big_det(Matrix<T> m) {
 			term *= m.data[i][cols_permuted[i]];
 		}
 		det += term * (perms % 2 == 0 ? 1 : -1);
-	} while (std::next_permutation(cols_permuted.begin(), cols_permuted.end()));
+	} while (std::next_permutation(std::begin(cols_permuted), std::end(cols_permuted)));
 	return det;
 }
 
 template<typename T>
-T Matrix<T>::det(Matrix<T>& m) {
+T Matrix<T>::det(Matrix<T> & m) {
 	if (m.cols() != m.rows()) {
 		throw std::runtime_error("Determinants is only for square matrices.");
 	}
