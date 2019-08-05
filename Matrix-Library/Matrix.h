@@ -14,7 +14,7 @@ const double EPS = std::numeric_limits<double>::epsilon() * 1e6;
 template<typename T>
 class Matrix {
 	static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
-		"result_type must be a floating point or integral type");
+		"Matrix template type must be a floating point or integral type.");
 	std::vector<std::vector<T>> data;
 	std::pair<Matrix<T>, std::size_t> upper();
 	void print_solutions(const std::vector<std::size_t>&);
@@ -77,7 +77,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& mat) {
 		for (std::size_t i = 0; i < mat.rows(); i++) {
-			out << "{";
+			out << "[";
 			for (std::size_t j = 0; j < mat.cols(); j++) {
 				if (fabs(mat[i][j] - 0) < EPS) {
 					out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
@@ -87,12 +87,12 @@ public:
 					out << ' ';
 				}
 			}
-			out << "}";
+			out << "]";
 			if (i != mat.rows() - 1) {
 				out << ',' << std::endl;
 			}
 		}
-		out << std::endl << std::endl;
+		out << std::endl;
 		return out;
 	}
 
@@ -101,8 +101,9 @@ public:
 		// [1 2 3; 4 5 6; 7 8 9;]
 		std::string tmp;
 		std::string raw_form;
-		while (getline(in, tmp) && tmp.find(']') == std::string::npos)
+		while (getline(in, tmp) && tmp.find(']') == std::string::npos) {
 			raw_form += tmp;
+		}
 		raw_form += tmp;
 		raw_form.erase(std::begin(raw_form));
 		raw_form.erase(std::end(raw_form) - 1);
