@@ -112,6 +112,17 @@ Matrix<T> Matrix<T>::eye(const std::size_t N) {
 	return result;
 }
 
+// Returns a matrix of size {r, c} with zero elements.
+template<typename T>
+Matrix<T> Matrix<T>::zeros(const std::size_t r, const std::size_t c) {
+	return Matrix<T>{r, c, T{ 0 }};
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::ones(const std::size_t r, const std::size_t c) {
+	return Matrix<T>{r, c, T{ 1 }};
+}
+
 template<typename T>
 Matrix<T> Matrix<T>::pascal(const std::size_t N) {
 	Matrix<T> result{ N, N, T{0} };
@@ -374,6 +385,98 @@ Matrix<T> Matrix<T>::permutation_matrix(const std::size_t size, const std::size_
 	return P;
 }
 
+// Calculates and returns the determinant of a given matrix.
+template<typename T>
+T Matrix<T>::elem_det(Matrix<T> m) {
+	auto p = m.upper();
+	std::size_t no_of_exchanges = p.second;
+	T res = 1;
+	for (int i = 0; i < m.rows(); i++) {
+		res *= m[i][i];
+	}
+	std::cout << m;
+	if (std::fabs(res) <= EPS) {
+		return 0;
+	}
+	return res * ((no_of_exchanges % 2 != 0) ? -1 : 1);
+}
+
+// Minimum number of swaps to sort the vector.
+template<typename T>
+std::size_t Matrix<T>::num_of_perms(const std::vector<std::size_t> & arr) {
+	std::size_t const N = arr.size();
+	std::vector<std::pair<int, int>> arr_pos(N);
+	for (std::size_t i = 0; i < N; i++) {
+		arr_pos[i].first = arr[i];
+		arr_pos[i].second = i;
+	}
+	sort(std::begin(arr_pos), std::end(arr_pos));
+	std::vector<bool> vis(N, false);
+	std::size_t ans = 0;
+
+	for (std::size_t i = 0; i < N; i++) {
+		if (vis[i] || arr_pos[i].second == i) {
+			continue;
+		}
+		std::size_t cycle_size = 0;
+		std::size_t j = i;
+		while (!vis[j]) {
+			vis[j] = 1;
+			j = arr_pos[j].second;
+			cycle_size++;
+		}
+		if (cycle_size > 0) {
+			ans += (cycle_size - 1);
+		}
+	}
+	return ans;
+}
+
+template<typename T>
+T Matrix<T>::big_det(Matrix<T> m) {
+	const std::size_t N = m.cols();
+	std::vector<std::size_t> cols_permuted(N);
+	for (std::size_t i = 0; i < N; i++) {
+		cols_permuted[i] = i;
+	}
+	T det = T{ 0 };
+	do {
+		std::size_t const perms = Matrix<double>::num_of_perms(cols_permuted);
+		T term = 1;
+		for (std::size_t i = 0; i < N; i++) {
+			term *= m.data[i][cols_permuted[i]];
+		}
+		det += term * (perms % 2 == 0 ? 1 : -1);
+	} while (std::next_permutation(std::begin(cols_permuted), std::end(cols_permuted)));
+	return det;
+}
+
+template<typename T>
+T Matrix<T>::det(Matrix<T> & m) {
+	if (m.cols() != m.rows()) {
+		throw std::runtime_error("Determinants is only for square matrices.");
+	}
+	const std::size_t N = m.cols();
+	if (N < 7) { // The limit where big_det becomes slower than elem_det.
+		return Matrix<T>::big_det(m);
+	}
+	else {
+		return Matrix<T>::elem_det(m);
+	}
+}
+
+template <typename T>
+T Matrix<T>::trace(const Matrix<T> & m) {
+	if (m.cols() != m.rows()) {
+		throw std::runtime_error("Trace is only for square matrices.");
+	}
+	T res{};
+	for (int i = 0; i < m.rows(); i++) {
+		res += m[i][i];
+	}
+	return res;
+}
+
 // Inverses a matrix or throws if non square or singular matrix.
 template<typename T>
 Matrix<T> Matrix<T>::inverse(const Matrix<T> & A) {
@@ -414,7 +517,7 @@ bool Matrix<T>::zero_row(const std::size_t i) {
 
 // Fills the matrix with the specified value.
 template<typename T>
-void Matrix<T>::fill(const T & val) {
+void Matrix<T>::fill(const T val) {
 	for (auto& R : this->data) {
 		std::fill(std::begin(R), std::end(R), val);
 	}
@@ -439,12 +542,6 @@ void Matrix<T>::add_col(const std::vector<T> & c) {
 	for (auto& R : this->data) {
 		R.push_back(c[i++]);
 	}
-}
-
-// Returns a matrix of size {r, c} with zero elements.
-template<typename T>
-Matrix<T> Matrix<T>::zeros(const std::size_t r, const std::size_t c) {
-	return Matrix<T>{r, c, T{ 0 }};
 }
 
 // Concatenate the param. matrix' rows.
@@ -546,7 +643,7 @@ Matrix<T> Matrix<T>::randn(const std::size_t r, const std::size_t c) {
  * uniformly distributed pseudorandom.
  */
 template<typename T>
-Matrix<T> Matrix<T>::randi(const std::size_t r, const std::size_t c, const int& imin, const int& imax) {
+Matrix<T> Matrix<T>::randi(const std::size_t r, const std::size_t c, const int imin, const int imax) {
 	Matrix<T> result{ r, c };
 	std::random_device rand_dev;
 	std::mt19937_64 generator(rand_dev());
@@ -563,7 +660,7 @@ Matrix<T> Matrix<T>::randi(const std::size_t r, const std::size_t c, const int& 
  * uniformly distributed pseudorandom.
  */
 template<typename T>
-Matrix<T> Matrix<T>::randi(const std::size_t N, const std::size_t imin, const int& imax) {
+Matrix<T> Matrix<T>::randi(const std::size_t N, const std::size_t imin, const int imax) {
 	return randi(N, N, imin, imax);
 }
 
@@ -700,84 +797,6 @@ template <typename T> std::pair<Matrix<T>, Matrix<T>> Matrix<T>::QR(const Matrix
 	auto R = Matrix<T>::transpose(Q) * m;
 	return { Q, R };
 
-}
-
-// Calculates and returns the determinant of a given matrix.
-template<typename T>
-T Matrix<T>::elem_det(Matrix<T> m) {
-	auto p = m.upper();
-	std::size_t no_of_exchanges = p.second;
-	T res = 1;
-	for (int i = 0; i < m.rows(); i++) {
-		res *= m[i][i];
-	}
-	std::cout << m;
-	if (std::fabs(res) <= EPS) return 0;
-	return res * ((no_of_exchanges % 2 != 0) ? -1 : 1);
-}
-
-// Minimum number of swaps to sort the vector.
-template<typename T>
-std::size_t Matrix<T>::num_of_perms(const std::vector<std::size_t> & arr) {
-	std::size_t const N = arr.size();
-	std::vector<std::pair<int, int>> arr_pos(N);
-	for (std::size_t i = 0; i < N; i++) {
-		arr_pos[i].first = arr[i];
-		arr_pos[i].second = i;
-	}
-	sort(std::begin(arr_pos), std::end(arr_pos));
-	std::vector<bool> vis(N, false);
-	std::size_t ans = 0;
-
-	for (std::size_t i = 0; i < N; i++) {
-		if (vis[i] || arr_pos[i].second == i) {
-			continue;
-		}
-		std::size_t cycle_size = 0;
-		std::size_t j = i;
-		while (!vis[j]) {
-			vis[j] = 1;
-			j = arr_pos[j].second;
-			cycle_size++;
-		}
-		if (cycle_size > 0) {
-			ans += (cycle_size - 1);
-		}
-	}
-	return ans;
-}
-
-template<typename T>
-T Matrix<T>::big_det(Matrix<T> m) {
-	const std::size_t N = m.cols();
-	std::vector<std::size_t> cols_permuted(N);
-	for (std::size_t i = 0; i < N; i++) {
-		cols_permuted[i] = i;
-	}
-	T det = T{ 0 };
-	do {
-		std::size_t const perms = Matrix<double>::num_of_perms(cols_permuted);
-		T term = 1;
-		for (std::size_t i = 0; i < N; i++) {
-			term *= m.data[i][cols_permuted[i]];
-		}
-		det += term * (perms % 2 == 0 ? 1 : -1);
-	} while (std::next_permutation(std::begin(cols_permuted), std::end(cols_permuted)));
-	return det;
-}
-
-template<typename T>
-T Matrix<T>::det(Matrix<T> & m) {
-	if (m.cols() != m.rows()) {
-		throw std::runtime_error("Determinants is only for square matrices.");
-	}
-	const std::size_t N = m.cols();
-	if (N < 7) {
-		return Matrix<T>::big_det(m);
-	}
-	else {
-		return Matrix<T>::elem_det(m);
-	}
 }
 
 template<typename T>
