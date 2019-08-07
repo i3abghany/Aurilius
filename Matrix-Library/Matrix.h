@@ -38,7 +38,7 @@ public:
 
 	std::size_t cols() const { return this->data[0].size(); }
 	std::size_t rows() const { return this->data.size(); }
-	std::pair<std::size_t, std::size_t> size() const { return { cols(), rows() }; }
+	std::pair<std::size_t, std::size_t> size() const { return { this->rows(), this->cols() }; }
 
 	void add_row(const std::vector<T>&);
 	void add_col(const std::vector<T>&);
@@ -65,7 +65,7 @@ public:
 	void insert_col(const Matrix<T>&, const std::size_t);
 	void remove_col(const std::size_t);
 
-	void fill(const T&);
+	void fill(const T);
 
 	static Matrix<T> matmul(const Matrix<T>&, const Matrix<T>&);
 	static Matrix<T> transpose(const Matrix<T>&);
@@ -73,6 +73,7 @@ public:
 	static std::pair<Matrix<T>, Matrix<T>> LU(const Matrix<T>&);
 	static bool is_symmetric(const Matrix&);
 	static T det(Matrix<T>&);
+	static T trace(const Matrix<T>&);
 
 
 	friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& mat) {
@@ -214,15 +215,16 @@ public:
 		return data.at(i);
 	}
 
-	static Matrix<T> eye(const std::size_t N);
-	static Matrix<T> pascal(const std::size_t N);
-	static Matrix<T> zeros(const std::size_t rows, const std::size_t cols);
-	static Matrix<T> permutation_matrix(const std::size_t size, const std::size_t, const std::size_t);
+	static Matrix<T> eye(const std::size_t);
+	static Matrix<T> pascal(const std::size_t);
+	static Matrix<T> zeros(const std::size_t, const std::size_t);
+	static Matrix<T> ones(const std::size_t, const std::size_t);
+	static Matrix<T> permutation_matrix(const std::size_t, const std::size_t, const std::size_t);
 
 	static Matrix<T> randn(const std::size_t, const std::size_t);
-	static Matrix<T> rand(const std::size_t, const std::size_t);
-	static Matrix<T> randi(const std::size_t, const std::size_t, const int&, const int&);
-	static Matrix<T> randi(const std::size_t, const std::size_t, const int&);
+	static Matrix<T> rand (const std::size_t, const std::size_t);
+	static Matrix<T> randi(const std::size_t, const std::size_t, const int, const int);
+	static Matrix<T> randi(const std::size_t, const std::size_t, const int);
 
 	void gaussian_elimination(bool mode = false);
 	static Matrix<T> inverse(const Matrix<T>&);
