@@ -124,7 +124,7 @@ public:
 		}
 		std::size_t r = tmp_data.size();
 		std::size_t c = tmp_data[0].size();
-		for (auto ro : tmp_data) {
+		for (const auto& ro : tmp_data) {
 			if (ro.size() != c) {
 				throw std::runtime_error{ "Rows can't have different numbers of elements." };
 			}
