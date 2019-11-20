@@ -77,8 +77,9 @@ void Matrix<T>::exchange_rows(const std::size_t r1, const std::size_t r2) {
 template<typename T>
 Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 
-	if (first.cols() != second.rows())
+	if (first.cols() != second.rows()) {
 		throw std::runtime_error{ "Size doesn't match for matrix multiplication." };
+	}
 	Matrix<T> result{ first.rows(), second.cols() };
 	for (std::size_t i = 0; i < first.rows(); i++) {
 		for (std::size_t j = 0; j < second.cols(); j++) {
