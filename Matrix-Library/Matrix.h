@@ -108,20 +108,27 @@ public:
 		raw_form += tmp;
 		raw_form.erase(std::begin(raw_form));
 		raw_form.erase(std::end(raw_form) - 1);
-
-		std::size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';'; });
-		std::replace_if(std::begin(raw_form), std::end(raw_form), [](int c) { return c == ';'; }, '\n');
+		if(raw_form.back() != ';') {
+            raw_form.push_back(';');
+        }
+		std::size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](const int c) { return c == ';'; });
+		std::replace_if(std::begin(raw_form), std::end(raw_form), [](const int c) { return c == ';'; }, '\n');
 		std::stringstream ss(raw_form);
 		std::vector<std::vector<T>> tmp_data(num_rows, std::vector<T>());
 		int i = 0;
-		while (getline(ss, tmp)) {
-			std::stringstream row_ss(tmp);
-			T data_member;
-			while (row_ss >> data_member) {
-				tmp_data[i].push_back(data_member);
-			}
-			i++;
-		}
+        ss.exceptions(std::istream::badbit);
+        try {
+            while (getline(ss, tmp)) {
+                std::stringstream row_ss(tmp);
+                T data_member;
+                while (row_ss >> data_member) {
+                    tmp_data[i].push_back(data_member);
+                }
+                i++;
+            }
+        } catch(const std::istream::failure& e) {
+            throw e;
+        }
 		std::size_t r = tmp_data.size();
 		std::size_t c = tmp_data[0].size();
 		for (const auto& ro : tmp_data) {
