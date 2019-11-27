@@ -1,5 +1,7 @@
 #include <iostream>
-#include "Matrix.h"
+#include "Aurilius.h"
+
+using namespace Aurilius;
 
 int main() {
 
@@ -13,10 +15,17 @@ int main() {
 
 	auto b = Matrix<double>::col_vector({ 1, 2, 2, 2, 2 });
 	
-	// //project the b vector into the column space of A C(A)
-	// //and then tuck it to make an augmented matrix.
+	//project the b vector into the column space of A C(A)
+	//and then tuck it to make an augmented matrix.
 	A.tuck_cols(Matrix<double>::project_into_col_space(A, b));
 	A.gaussian_elimination(); // will print out c and d in (y = c + d*x), the best-fit line.
+
+	const auto f = [](double x)
+	{
+		return 1.0 / std::sqrt(1 + x);
+	};
+
+	std::cout << std::setprecision(6) << simpson(f, 0, 2, 2000);
 
 	return 0;
 }
