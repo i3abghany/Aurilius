@@ -20,11 +20,14 @@ int main() {
 	A.tuck_cols(Matrix<double>::project_into_col_space(A, b));
 	A.gaussian_elimination(); // will print out c and d in (y = c + d*x), the best-fit line.
 
-	const auto f = [](double x)
-	{
+
+	//////////////////////////////////////////////
+
+	const auto f = [](double x) {
 		return 1.0 / std::sqrt(1 + x);
 	};
 
+	// will approximate f(x) = 1/sqrt(1 + x) from 0 to 2.
 	std::cout << std::setprecision(6) << simpson(f, 0, 2, 2000);
 
 	return 0;

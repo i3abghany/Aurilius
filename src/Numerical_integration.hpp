@@ -1,5 +1,6 @@
 #pragma once
-#include<iostream>
+#include <limits>
+#include <cmath>
 
 namespace Aurilius {
 	const double EPS = std::numeric_limits<double>::epsilon() * 1e5;
