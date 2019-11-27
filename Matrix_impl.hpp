@@ -5,6 +5,8 @@
 #include <random>
 #include "Matrix.h"
 
+using namespace Aurilius;
+
 template<typename T>
 Matrix<T>::Matrix(std::size_t ROWS, std::size_t COLS, T initial) {
 	this->data.resize(ROWS);
