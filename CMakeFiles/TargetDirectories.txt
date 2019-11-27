@@ -1,3 +1,0 @@
-C:/Users/pi/Desktop/Aurilius/CMakeFiles/pin.dir
-C:/Users/pi/Desktop/Aurilius/CMakeFiles/ALL_BUILD.dir
-C:/Users/pi/Desktop/Aurilius/CMakeFiles/ZERO_CHECK.dir
