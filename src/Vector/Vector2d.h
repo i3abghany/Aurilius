@@ -4,7 +4,7 @@
 
 namespace Aurilius {
 
-class Vector2d{
+class Vector2d {
 private:
     double *data;
 public:
