@@ -1,11 +1,11 @@
 #include <iostream>
 #include "Aurilius.h"
-
+#include <omp.h>
 using namespace Aurilius;
 
 int main() {
 
-	Matrix<double> A{
+    Matrix<double> A{
 			{1, 1},
 			{1, 2},
 			{1, 3},
@@ -18,7 +18,7 @@ int main() {
 	//project the b vector into the column space of A C(A)
 	//and then tuck it to make an augmented matrix.
 	A.tuck_cols(Matrix<double>::project_into_col_space(A, b));
-	A.gaussian_elimination(); // will print out c and d in (y = c + d*x), the best-fit line.
+//	A.gaussian_elimination(); // will print out c and d in (y = c + d*x), the best-fit line.
 
 
 	//////////////////////////////////////////////

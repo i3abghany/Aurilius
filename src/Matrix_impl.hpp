@@ -83,9 +83,12 @@ Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 		throw std::runtime_error{ "Size doesn't match for matrix multiplication." };
 	}
 	Matrix<T> result{ first.rows(), second.cols() };
-	for (std::size_t i = 0; i < first.rows(); i++) {
-		for (std::size_t j = 0; j < second.cols(); j++) {
-			for (std::size_t k = 0; k < first.cols(); k++) {
+
+	std::size_t i, j, k;
+	#pragma omp parallel for private(i, j, k) shared(result, first, second)
+	for (i = 0; i < first.rows(); i++) {
+		for (j = 0; j < second.cols(); j++) {
+			for (k = 0; k < first.cols(); k++) {
 				result[i][j] += first[i][k] * second[k][j];
 			}
 		}
@@ -172,7 +175,8 @@ bool Matrix<T>::is_inconsistent() {
 
 template<typename T>
 void Matrix<T>::gaussian_elimination(bool mode) {
-	std::vector<std::size_t> piv_idxs;
+    constexpr std::size_t n_threads = 8;
+    std::vector<std::size_t> piv_idxs;
 	bool free_col = false;
 	for (std::size_t row = 0; row < this->rows(); row++) {
 		T pivot = (*this)[row][row];
@@ -195,7 +199,8 @@ void Matrix<T>::gaussian_elimination(bool mode) {
 			for (std::size_t r = 0; r < this->rows(); r++) {
 				if (r == row)
 					continue;
-				T multiplier = (*this)[r][piv_idx/* row */];
+				T multiplier = (*this)[r][piv_idx];
+                #pragma omp parallel for num_threads(n_threads)
 				for (std::size_t elem = 0; elem < this->cols(); elem++) {
 					(*this)[r][elem] -= multiplier * (*this)[row][elem];
 					if (fabs((*this)[r][elem]) < EPS) {
