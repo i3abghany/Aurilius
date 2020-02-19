@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <sstream>
 #include <type_traits>
+#include <omp.h>
 
 namespace Aurilius {
 	template<typename T>
