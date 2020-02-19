@@ -1,3 +1,0 @@
-C:/Users/pi/Desktop/Aurilius/cmake-build-debug/CMakeFiles/pin.dir
-C:/Users/pi/Desktop/Aurilius/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/pi/Desktop/Aurilius/cmake-build-debug/CMakeFiles/rebuild_cache.dir
