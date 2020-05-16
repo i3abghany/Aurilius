@@ -17,9 +17,7 @@ void Aurilius::Perceptron::read_data() {
     X.remove_col(X.cols() - 1);
     const size_t dim = X.cols();
     W = Matrix<double>::rand(dim, 1);
-    W = Matrix<double>{{0.294665}, {0.53058676}};
-//    bias = W[0][0] + X.max();
-    bias = 1.1915207869474949;
+    bias = W[0][0] + X.max();
 }
 
 
