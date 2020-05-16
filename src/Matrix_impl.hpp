@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <random>
-#include "Matrix.h"
+//#include "Matrix.h"
 
 using namespace Aurilius;
 
@@ -51,6 +51,21 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) 
 	}
 }
 
+template <typename T>
+std::string Matrix<T>::get_raw_string(std::istream &in) {
+        std::string raw_form;
+        std::string tmp;
+        while (getline(in, tmp) && tmp.find(']') == std::string::npos) {
+            raw_form += tmp;
+        }
+        raw_form += tmp;
+        raw_form.erase(std::begin(raw_form));
+        raw_form.erase(std::end(raw_form) - 1);
+        if(raw_form.back() != ';') {
+            raw_form.push_back(';');
+        }
+        return raw_form;
+}
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
 	int COLS = std::begin(data_to_copy)->size();
@@ -85,7 +100,7 @@ Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 	Matrix<T> result{ first.rows(), second.cols() };
 
 	std::size_t i, j, k;
-	#pragma omp parallel for private(i, j, k) shared(result, first, second)
+	#pragma omp parallel for private(i, j, k) shared(result, first, second) default(none)
 	for (i = 0; i < first.rows(); i++) {
 		for (j = 0; j < second.cols(); j++) {
 			for (k = 0; k < first.cols(); k++) {
@@ -94,6 +109,24 @@ Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 		}
 	}
 	return result;
+}
+
+template <typename T>
+T Matrix<T>::max() {
+    T res = 0.0;
+    for (size_t i = 0; i < this->rows(); i++) {
+        res = std::max(res, *std::max(this->data[i].begin(), this->data[i].end()));
+    }
+    return res;
+}
+
+template <typename T>
+T Matrix<T>::min() {
+    T res = 0.0;
+    for (size_t i = 0; i < this->rows(); i++) {
+        res = std::min(res, *std::min(this->data[i].begin(), this->data[i].end()));
+    }
+    return res;
 }
 
 // Transposes a matrix and returns the transposed copy.
@@ -602,9 +635,7 @@ void Matrix<T>::remove_col(const std::size_t r) {
 
 /* returns a matrix of size {r, c} with elements
  * uniformly distributed random numbers
- * whose values lies between 0 and 1.
- * Since it is uniformly distributed,
- * therefore the mean value is 0.5.
+ * whose values lie between 0 and 1.
  */
 template<typename T>
 Matrix<T> Matrix<T>::rand(const std::size_t r, const std::size_t c) {
@@ -691,6 +722,12 @@ T Matrix<T>::dot_prod(const Matrix<T> & a, const Matrix<T> & b) {
 		res += (vecA[0][i] * vecB[0][i]);
 	}
 	return res;
+}
+template<typename T>
+void Matrix<T>::shuffle_rows() {
+    auto rd = std::random_device {};
+    auto rng = std::default_random_engine { rd() };
+    std::shuffle(std::begin(this->data), std::end(this->data), rng);
 }
 
 // Projects a vector a in the direction of another vector b.
