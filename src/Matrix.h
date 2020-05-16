@@ -3,12 +3,19 @@
 #include<iostream>
 #include <vector>
 #include <iomanip>
+<<<<<<< HEAD
 #include <cmath>
+=======
+#include <math.h>
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 #include <limits>
 #include <algorithm>
 #include <sstream>
 #include <type_traits>
+<<<<<<< HEAD
 #include <fstream>
+=======
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 #include <omp.h>
 
 namespace Aurilius {
@@ -23,17 +30,28 @@ class Aurilius::Matrix {
 	static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
 		"Matrix template type must be a floating point or integral type.");
 	std::vector<std::vector<T>> data;
+<<<<<<< HEAD
 	std::pair<Matrix<T>, size_t> upper();
 	void print_solutions(const std::vector<size_t>&);
 	static size_t num_of_perms(const std::vector<size_t>&);
+=======
+	std::pair<Matrix<T>, std::size_t> upper();
+	void print_solutions(const std::vector<std::size_t>&);
+	static std::size_t num_of_perms(const std::vector<std::size_t>&);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 	static T elem_det(Matrix<T>);
 	static T big_det(Matrix<T>);
 
 public:
 	Matrix() = default;
+<<<<<<< HEAD
 	Matrix(size_t, size_t, T = T{}); // initialized dimensions.
 	Matrix(T**, size_t, size_t);
+=======
+	Matrix(std::size_t, std::size_t, T = T{}); // initialized dimensions.
+	Matrix(T**, std::size_t, std::size_t);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 	Matrix(std::initializer_list<std::initializer_list<T>>);
 	explicit Matrix(std::vector<std::vector<T>>);
 
@@ -43,6 +61,7 @@ public:
 	Matrix<T>& operator=(const Matrix<T>&) = default;
 	Matrix<T>& operator=(Matrix<T>&&) noexcept = default;
 
+<<<<<<< HEAD
 	size_t cols() const { return this->data[0].size(); }
 	size_t rows() const { return this->data.size(); }
 	std::pair<size_t, size_t> size() const { return { this->rows(), this->cols() }; }
@@ -51,6 +70,11 @@ public:
 	T min();
 
 	void shuffle_rows();
+=======
+	std::size_t cols() const { return this->data[0].size(); }
+	std::size_t rows() const { return this->data.size(); }
+	std::pair<std::size_t, std::size_t> size() const { return { this->rows(), this->cols() }; }
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 	void add_row(const std::vector<T>&);
 	void add_col(const std::vector<T>&);
@@ -58,11 +82,19 @@ public:
 	void tuck_rows(const Matrix<T>&);
 	void tuck_cols(const Matrix<T>&);
 
+<<<<<<< HEAD
 	void exchange_rows(const size_t, const size_t);
 	void exchange_cols(const size_t, const size_t);
 
 	static T dot_prod(const Matrix<T>&, const Matrix<T>&);
 	void normalize_col(const size_t);
+=======
+	void exchange_rows(const std::size_t, const std::size_t);
+	void exchange_cols(const std::size_t, const std::size_t);
+
+	static T dot_prod(const Matrix<T>&, const Matrix<T>&);
+	void normalize_col(const std::size_t);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 	static Matrix<T> project(const Matrix<T>&, const Matrix<T>&);
 	static Matrix<T> project_into_col_space(const Matrix<T>&, const Matrix<T>&);
@@ -73,9 +105,15 @@ public:
 	bool is_row() const;
 	bool is_col() const;
 
+<<<<<<< HEAD
 	Matrix<T> get_col(const size_t);
 	void insert_col(const Matrix<T>&, const size_t);
 	void remove_col(const size_t);
+=======
+	Matrix<T> get_col(const std::size_t);
+	void insert_col(const Matrix<T>&, const std::size_t);
+	void remove_col(const std::size_t);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 	void fill(const T);
 
@@ -89,9 +127,15 @@ public:
 
 
 	friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& mat) {
+<<<<<<< HEAD
 		for (size_t i = 0; i < mat.rows(); i++) {
 			out << "[";
 			for (size_t j = 0; j < mat.cols(); j++) {
+=======
+		for (std::size_t i = 0; i < mat.rows(); i++) {
+			out << "[";
+			for (std::size_t j = 0; j < mat.cols(); j++) {
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 				if (fabs(mat[i][j] - 0) < EPS) {
 					out << std::fixed << std::setprecision(3) << std::setw(6) << (mat[i][j] = 0);
 				}
@@ -109,6 +153,7 @@ public:
 		return out;
 	}
 
+<<<<<<< HEAD
 private:
     static std::string get_raw_string(std::istream &in);
 public:
@@ -117,6 +162,23 @@ public:
 		std::string tmp;
 		std::string raw_form = get_raw_string(in);
 		size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](const int c) { return c == ';'; });
+=======
+	// rows separated by semicolon.
+	friend std::istream& operator>>(std::istream & in, Matrix<T> & mat) {
+		// [1 2 3; 4 5 6; 7 8 9;]
+		std::string tmp;
+		std::string raw_form;
+		while (getline(in, tmp) && tmp.find(']') == std::string::npos) {
+			raw_form += tmp;
+		}
+		raw_form += tmp;
+		raw_form.erase(std::begin(raw_form));
+		raw_form.erase(std::end(raw_form) - 1);
+		if(raw_form.back() != ';') {
+            raw_form.push_back(';');
+        }
+		std::size_t num_rows = std::count_if(std::begin(raw_form), std::end(raw_form), [](const int c) { return c == ';'; });
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 		std::replace_if(std::begin(raw_form), std::end(raw_form), [](const int c) { return c == ';'; }, '\n');
 		std::stringstream ss(raw_form);
 		std::vector<std::vector<T>> tmp_data(num_rows, std::vector<T>());
@@ -134,8 +196,13 @@ public:
         } catch(const std::istream::failure& e) {
             throw e;
         }
+<<<<<<< HEAD
 
 		size_t c = tmp_data[0].size();
+=======
+		std::size_t r = tmp_data.size();
+		std::size_t c = tmp_data[0].size();
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 		for (const auto& ro : tmp_data) {
 			if (ro.size() != c) {
 				throw std::runtime_error{ "Rows can't have different numbers of elements." };
@@ -149,8 +216,13 @@ public:
 		if (a.rows() != b.rows() || a.cols() != b.cols())
 			throw std::runtime_error{ "Matrices of different dimensions cannot be added together" };
 		Matrix<T> res{ a.rows(), a.cols() };
+<<<<<<< HEAD
 		for (size_t i = 0; i < res.rows(); i++) {
 			for (size_t j = 0; j < res.cols(); j++)
+=======
+		for (std::size_t i = 0; i < res.rows(); i++) {
+			for (std::size_t j = 0; j < res.cols(); j++)
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 				res[i][j] = (a[i][j] + b[i][j]);
 		}
 		return res;
@@ -169,8 +241,13 @@ public:
 		if (a.data.size() != b.data.size() || a.data[0].size() != b.data[0].size()) {
 			return false;
 		}
+<<<<<<< HEAD
 		for (size_t i = 0; i < a.rows(); i++) {
 			for (size_t j = 0; j < a.cols(); j++) {
+=======
+		for (std::size_t i = 0; i < a.rows(); i++) {
+			for (std::size_t j = 0; j < a.cols(); j++) {
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 				if (a[i][j] != b[i][j]) {
 					return false;
 				}
@@ -185,8 +262,13 @@ public:
 
 	friend Matrix<T> operator-(const Matrix<T> & a) {
 		auto tmp = Matrix<T>{ a.data, a.rows(), a.cols() };
+<<<<<<< HEAD
 		for (size_t i = 0; i < a.rows(); i++) {
 			for (size_t j = 0; j < a.cols(); j++) {
+=======
+		for (std::size_t i = 0; i < a.rows(); i++) {
+			for (std::size_t j = 0; j < a.cols(); j++) {
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 				tmp[i][j] = -1 * tmp[i][j];
 			}
 		}
@@ -207,8 +289,13 @@ public:
 	}
 
 	friend Matrix<T> operator*(Matrix<T> mat, const T & b) {
+<<<<<<< HEAD
 		for (size_t i = 0; i < mat.rows(); i++) {
 			for (size_t j = 0; j < mat.cols(); j++) {
+=======
+		for (std::size_t i = 0; i < mat.rows(); i++) {
+			for (std::size_t j = 0; j < mat.cols(); j++) {
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 				mat[i][j] *= b;
 			}
 		}
@@ -219,6 +306,7 @@ public:
 		return mat * b;
 	}
 
+<<<<<<< HEAD
 	std::vector<T>& operator[](const size_t i) {
 		return data.at(i);
 	}
@@ -237,6 +325,26 @@ public:
 	static Matrix<T> rand (const size_t, const size_t);
 	static Matrix<T> randi(const size_t, const size_t, const int, const int);
 	static Matrix<T> randi(const size_t, const size_t, const int);
+=======
+	std::vector<T>& operator[](const std::size_t i) {
+		return data.at(i);
+	}
+
+	std::vector<T> operator[](const std::size_t i) const {
+		return data.at(i);
+	}
+
+	static Matrix<T> eye(const std::size_t);
+	static Matrix<T> pascal(const std::size_t);
+	static Matrix<T> zeros(const std::size_t, const std::size_t);
+	static Matrix<T> ones(const std::size_t, const std::size_t);
+	static Matrix<T> permutation_matrix(const std::size_t, const std::size_t, const std::size_t);
+
+	static Matrix<T> randn(const std::size_t, const std::size_t);
+	static Matrix<T> rand (const std::size_t, const std::size_t);
+	static Matrix<T> randi(const std::size_t, const std::size_t, const int, const int);
+	static Matrix<T> randi(const std::size_t, const std::size_t, const int);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 	void gaussian_elimination(bool mode = false);
 	static Matrix<T> inverse(const Matrix<T>&);
@@ -245,8 +353,13 @@ public:
 	void orthonormalize();
 	static std::pair<Matrix<T>, Matrix<T>> QR(const Matrix<T>&);
 
+<<<<<<< HEAD
 	size_t zero_rows();
 	bool zero_row(const size_t);
+=======
+	std::size_t zero_rows();
+	bool zero_row(const std::size_t);
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 	bool is_inconsistent();
 
 	~Matrix();

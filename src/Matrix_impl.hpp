@@ -3,7 +3,11 @@
 #include <assert.h>
 #include <algorithm>
 #include <random>
+<<<<<<< HEAD
 //#include "Matrix.h"
+=======
+#include "Matrix.h"
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 using namespace Aurilius;
 
@@ -51,6 +55,7 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> data_to_copy) 
 	}
 }
 
+<<<<<<< HEAD
 template <typename T>
 std::string Matrix<T>::get_raw_string(std::istream &in) {
         std::string raw_form;
@@ -66,6 +71,8 @@ std::string Matrix<T>::get_raw_string(std::istream &in) {
         }
         return raw_form;
 }
+=======
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 template<typename T>
 Matrix<T>::Matrix(std::vector<std::vector<T>> data_to_copy) {
 	int COLS = std::begin(data_to_copy)->size();
@@ -100,7 +107,11 @@ Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 	Matrix<T> result{ first.rows(), second.cols() };
 
 	std::size_t i, j, k;
+<<<<<<< HEAD
 	#pragma omp parallel for private(i, j, k) shared(result, first, second) default(none)
+=======
+	#pragma omp parallel for private(i, j, k) shared(result, first, second)
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 	for (i = 0; i < first.rows(); i++) {
 		for (j = 0; j < second.cols(); j++) {
 			for (k = 0; k < first.cols(); k++) {
@@ -111,6 +122,7 @@ Matrix<T> Matrix<T>::matmul(const Matrix<T>& first, const Matrix<T>& second) {
 	return result;
 }
 
+<<<<<<< HEAD
 template <typename T>
 T Matrix<T>::max() {
     T res = 0.0;
@@ -129,6 +141,8 @@ T Matrix<T>::min() {
     return res;
 }
 
+=======
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 // Transposes a matrix and returns the transposed copy.
 template<typename T>
 Matrix<T> Matrix<T>::transpose(const Matrix<T>& mat) {
@@ -635,7 +649,13 @@ void Matrix<T>::remove_col(const std::size_t r) {
 
 /* returns a matrix of size {r, c} with elements
  * uniformly distributed random numbers
+<<<<<<< HEAD
  * whose values lie between 0 and 1.
+=======
+ * whose values lies between 0 and 1.
+ * Since it is uniformly distributed,
+ * therefore the mean value is 0.5.
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
  */
 template<typename T>
 Matrix<T> Matrix<T>::rand(const std::size_t r, const std::size_t c) {
@@ -723,12 +743,15 @@ T Matrix<T>::dot_prod(const Matrix<T> & a, const Matrix<T> & b) {
 	}
 	return res;
 }
+<<<<<<< HEAD
 template<typename T>
 void Matrix<T>::shuffle_rows() {
     auto rd = std::random_device {};
     auto rng = std::default_random_engine { rd() };
     std::shuffle(std::begin(this->data), std::end(this->data), rng);
 }
+=======
+>>>>>>> 65cb193af67dbce9167dbe3eb09cbd0dbf7076e4
 
 // Projects a vector a in the direction of another vector b.
 template<typename T>
