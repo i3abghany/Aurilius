@@ -85,7 +85,7 @@ void Matrix<T>::exchange_cols(const size_t c1, const size_t c2) {
 	}
 }
 
-// eexchanges rows r1 and r2.
+// exchanges rows r1 and r2.
 template<typename T>
 void Matrix<T>::exchange_rows(const size_t r1, const size_t r2) {
 	std::swap(this->data[r1], this->data[r2]);
@@ -291,7 +291,7 @@ void Matrix<T>::gaussian_elimination(bool mode) {
 				if (r == row)
 					continue;
 				T multiplier = (*this)[r][piv_idx];
-//                #pragma omp parallel for num_threads(n_threads) default(none)
+                #pragma omp parallel for num_threads(n_threads) default(none)
 				for (size_t elem = 0; elem < this->cols(); elem++) {
 					(*this)[r][elem] -= multiplier * (*this)[row][elem];
 					if (fabs((*this)[r][elem]) < EPS) {
