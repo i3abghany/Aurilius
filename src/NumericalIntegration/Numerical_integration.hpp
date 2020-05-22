@@ -27,15 +27,15 @@ namespace Aurilius {
 		double partial_res, h;
 		h = 1.0 / n_threads;
 		double a = initial_a, b = initial_b;
-		#pragma omp parallel num_threads(n_threads) private(i, a, b, partial_res, res) default(none)
-		{
-            i = omp_get_thread_num();
-			a = initial_a + i * h;
-			b = initial_a + ((double)i + 1) * h;
-			partial_res = traprule(f, a, b, order);
-			#pragma omp critical
-			res += partial_res;
-		};
+//		#pragma omp parallel num_threads(n_threads) private(i, a, b, partial_res, res) default(none)
+//		{
+//            i = omp_get_thread_num();
+//			a = initial_a + i * h;
+//			b = initial_a + ((double)i + 1) * h;
+//			partial_res = traprule(f, a, b, order);
+//			#pragma omp critical
+//			res += partial_res;
+//		};
 
 		return res;
 	}

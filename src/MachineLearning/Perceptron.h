@@ -1,10 +1,5 @@
 #pragma once
-#include "../Matrix/Matrix.h"
-#include "Activations.h"
-
-namespace Aurilius::MachineLearning {
-    class Perceptron;
-}
+#include "MachineLearning.h"
 
 class Aurilius::MachineLearning::Perceptron {
     Matrix<double> X, y;
@@ -23,4 +18,5 @@ public:
     void shuffle_data();
     void train(size_t epochs = 25);
     double predict(const Matrix<double>&);
+
 };
