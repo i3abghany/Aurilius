@@ -2,11 +2,12 @@
 #include <limits>
 #include <cmath>
 #include <string>
+#include <omp.h>
+#include "../Aurilius.h"
 
 namespace Aurilius {
-	const double EPS = std::numeric_limits<double>::epsilon() * 1e5;
-
-	namespace {
+    constexpr static double EPS = std::numeric_limits<double>::epsilon() * 1e5;
+    namespace {
 		template<typename Callable>
 		double traprule(const Callable& f, double a, double b, std::size_t order) {
 			int i;
@@ -26,7 +27,7 @@ namespace Aurilius {
 		double partial_res, h;
 		h = 1.0 / n_threads;
 		double a = initial_a, b = initial_b;
-		#pragma omp parallel num_threads(n_threads) private(i,a,b,partial_res) default(none)
+		#pragma omp parallel num_threads(n_threads) private(i, a, b, partial_res, res) default(none)
 		{
             i = omp_get_thread_num();
 			a = initial_a + i * h;

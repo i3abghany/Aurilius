@@ -1,4 +1,5 @@
 #pragma once
-#include "Numerical_integration.hpp"
-#include "Matrix.h"
-#include "Perceptron.h"
+
+#include "NumericalIntegration/Numerical_integration.hpp"
+#include "Matrix/Matrix.h"
+#include "MachineLearning/MachineLearning.h"

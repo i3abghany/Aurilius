@@ -1,12 +1,12 @@
 #include "Perceptron.h"
 
-Aurilius::Perceptron::Perceptron(const std::string &file_name, double learn_rate) {
+Aurilius::MachineLearning::Perceptron::Perceptron(const std::string &file_name, double learn_rate) {
     this->file_name = file_name;
     this->learn_rate = learn_rate;
     this->bias = 0;
 }
 
-void Aurilius::Perceptron::read_data() {
+void Aurilius::MachineLearning::Perceptron::read_data() {
     std::ifstream f(file_name, std::ifstream::in);
     if(!f.good()) {
         throw std::runtime_error("Could not open the data file for Perceptron.\n");
@@ -21,21 +21,21 @@ void Aurilius::Perceptron::read_data() {
 }
 
 
-void Aurilius::Perceptron::shuffle_data() {
+void Aurilius::MachineLearning::Perceptron::shuffle_data() {
     X.shuffle_rows();
 }
 
-double Aurilius::Perceptron::predict(size_t idx) {
+double Aurilius::MachineLearning::Perceptron::predict(size_t idx) {
     auto ro = Matrix<double>::row_vector(X[idx]);
     return predict(ro);
 }
 
-double Perceptron::predict(const Matrix<double>& inp) {
+double Aurilius::MachineLearning::Perceptron::predict(const Matrix<double>& inp) {
     auto dot_prod = Matrix<double>::dot_prod(inp, W) + bias;
-    return Aurilius::Activations::step(dot_prod);
+    return Aurilius::MachineLearning::Activations::step(dot_prod);
 }
 
-void Aurilius::Perceptron::training_step() {
+void Aurilius::MachineLearning::Perceptron::training_step() {
     size_t len = X.rows();
     for(int i = 0; i < len; i++) {
         double y_hat = predict(i);
@@ -47,21 +47,21 @@ void Aurilius::Perceptron::training_step() {
     }
 }
 
-void Aurilius::Perceptron::increase_weights(size_t idx) {
+void Aurilius::MachineLearning::Perceptron::increase_weights(size_t idx) {
     for(int i = 0; i < W.rows(); i++) {
         W[i][0] += X[idx][i] * learn_rate;
     }
     bias += learn_rate;
 }
 
-void Aurilius::Perceptron::decrease_weights(size_t idx) {
+void Aurilius::MachineLearning::Perceptron::decrease_weights(size_t idx) {
     for(int i = 0; i < W.rows(); i++) {
         W[i][0] -= X[idx][i] * learn_rate;
     }
     bias -= learn_rate;
 }
 
-void Aurilius::Perceptron::train(size_t epochs) {
+void Aurilius::MachineLearning::Perceptron::train(size_t epochs) {
     for(size_t i = 0; i < epochs; i++) {
         training_step();
     }

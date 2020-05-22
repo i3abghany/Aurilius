@@ -3,6 +3,7 @@
 #include "Aurilius.h"
 
 using namespace Aurilius;
+using namespace Aurilius::MachineLearning;
 
 int main() {
 
@@ -27,6 +28,8 @@ int main() {
     Perceptron p("data.txt");
     p.read_data();
     p.train(25);
+
+    std::cout << MachineLearning::Loss::cross_entropy({{1, 0, 1, 1}}, {{0.4, 0.6 ,0.1, 0.5}}) << std::endl;
 
     // will approximate f(x) = 1/sqrt(1 + x) from 0 to 2.
     std::cout << std::setprecision(6) << trapezoidal(f, 0, 2);

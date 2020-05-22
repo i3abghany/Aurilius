@@ -17,10 +17,9 @@ namespace Aurilius {
 	class Matrix;
 }
 
-const double EPS = std::numeric_limits<double>::epsilon() * 1e6;
-
 template<typename T>
 class Aurilius::Matrix {
+    constexpr static double EPS = std::numeric_limits<double>::epsilon() * 1e6;
 	static_assert(std::is_floating_point<T>::value || std::is_integral<T>::value,
 		"Matrix template type must be a floating point or integral type.");
 	std::vector<std::vector<T>> data;
@@ -78,7 +77,9 @@ public:
 
 	void fill(const T);
 
-	static Matrix<T> matmul(const Matrix<T>&, const Matrix<T>&);
+    static Matrix<T> elementwise_add(const Matrix<T>&, const Matrix<T>&);
+    static Matrix<T> elementwise_mul(const Matrix<T>&, const Matrix<T>&);
+    static Matrix<T> matmul(const Matrix<T>&, const Matrix<T>&);
 	static Matrix<T> transpose(const Matrix<T>&);
 	static Matrix<T> upper(Matrix<T>);
 	static std::pair<Matrix<T>, Matrix<T>> LU(const Matrix<T>&);
