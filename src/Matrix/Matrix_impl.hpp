@@ -291,7 +291,7 @@ void Matrix<T>::gaussian_elimination(bool mode) {
 				if (r == row)
 					continue;
 				T multiplier = (*this)[r][piv_idx];
-                #pragma omp parallel for num_threads(n_threads) default(none)
+//                #pragma omp parallel for num_threads(n_threads) default(none)
 				for (size_t elem = 0; elem < this->cols(); elem++) {
 					(*this)[r][elem] -= multiplier * (*this)[row][elem];
 					if (fabs((*this)[r][elem]) < EPS) {
