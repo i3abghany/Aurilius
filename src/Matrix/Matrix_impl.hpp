@@ -291,7 +291,7 @@ void Matrix<T>::gaussian_elimination(bool mode) {
 				if (r == row)
 					continue;
 				T multiplier = (*this)[r][piv_idx];
-//                #pragma omp parallel for num_threads(n_threads) default(none)
+                #pragma omp parallel for num_threads(n_threads) default(none)
 				for (size_t elem = 0; elem < this->cols(); elem++) {
 					(*this)[r][elem] -= multiplier * (*this)[row][elem];
 					if (fabs((*this)[r][elem]) < EPS) {
@@ -699,8 +699,6 @@ void Matrix<T>::remove_col(const size_t r) {
 template<typename T>
 Matrix<T> Matrix<T>::rand(const size_t r, const size_t c) {
 	Matrix<T> result{ r, c };
-	static_assert(std::is_floating_point<T>::value,
-		"template must be a floating point type");
 	const T range_from = T{ 0.0 };
 	const T range_to = T{ 1.0 };
 	std::random_device rand_dev;
@@ -721,8 +719,6 @@ Matrix<T> Matrix<T>::rand(const size_t r, const size_t c) {
  */
 template<typename T>
 Matrix<T> Matrix<T>::randn(const size_t r, const size_t c) {
-	static_assert(std::is_floating_point<T>::value,
-		"template must be a floating point type");
 	Matrix<T> result{ r, c };
 	std::random_device rand_dev;
 	std::mt19937_64 generator(rand_dev());
@@ -907,4 +903,10 @@ template <typename T> std::pair<Matrix<T>, Matrix<T>> Matrix<T>::QR(const Matrix
 template<typename T>
 Matrix<T>::~Matrix() {
 	this->data.clear();
+}
+
+template<typename T>
+void Matrix<T>::randomize() {
+    auto m = rand(this->rows(), this->cols());
+    *this = m;
 }

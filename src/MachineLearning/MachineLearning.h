@@ -3,6 +3,11 @@
 namespace Aurilius::MachineLearning {
     class Perceptron;
     class LogisticRegression;
+    namespace ANN {
+        class Neuron;
+        class Layer;
+        class NeuralNetwork;
+    }
 }
 
 #include "../Matrix/Matrix.h"
@@ -10,3 +15,4 @@ namespace Aurilius::MachineLearning {
 #include "LogisticRegression.h"
 #include "Activations.h"
 #include "Loss.h"
+#include "NeuralNetwork/NeuralNetwork.h"

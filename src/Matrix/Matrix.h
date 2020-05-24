@@ -241,6 +241,8 @@ public:
 	static Matrix<T> randi(const size_t, const size_t, const int, const int);
 	static Matrix<T> randi(const size_t, const size_t, const int);
 
+	void randomize();
+
 	void gaussian_elimination(bool mode = false);
 	static Matrix<T> inverse(const Matrix<T>&);
 

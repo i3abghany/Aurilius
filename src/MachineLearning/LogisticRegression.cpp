@@ -12,12 +12,11 @@ void Aurilius::MachineLearning::LogisticRegression::read_data() {
         throw std::runtime_error("Could not open the data file for Perceptron.\n");
     }
     f >> X;
-//    shuffle_data();
+    shuffle_data();
     y = X.get_col(X.cols() - 1);
     X.remove_col(X.cols() - 1);
     const size_t dim = X.cols();
-//    W = Matrix<double>::rand(dim, 1);
-    W = {{-0.53076476 }, {0.93080519}};
+    W = Matrix<double>::rand(dim, 1);
 }
 
 void Aurilius::MachineLearning::LogisticRegression::shuffle_data() {

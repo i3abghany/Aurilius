@@ -18,3 +18,8 @@ Matrix<double> Aurilius::MachineLearning::Activations::softmax(const Aurilius::M
 double Aurilius::MachineLearning::Activations::sigmoid(double inp) {
     return 1.0 / (1 + std::exp(-inp));
 }
+
+
+double Aurilius::MachineLearning::Activations::sigmoid_prime(double inp) {
+    return sigmoid(inp) * (1 - sigmoid(inp));
+}
